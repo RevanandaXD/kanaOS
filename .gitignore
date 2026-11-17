@@ -1,0 +1,44 @@
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Node.js
+node_modules/
+.pnpm-store/
+
+# SvelteKit / Vite
+client/.svelte-kit/
+client/build/
+client/dist/
+client/.vite/
+
+# Go
+server/bin/
+server/dist/
+server/*.exe
+server/*.test
+server/coverage.out
+
+# Go workspace
+go.work
+go.work.sum
+
+# IDE & editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp

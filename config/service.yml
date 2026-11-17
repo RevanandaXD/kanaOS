@@ -1,0 +1,7 @@
+categories:
+  - name: infrastructure
+    services:
+      - name: Portainer
+        description: Container Management
+        url: http://localhost:9000
+        icon: portainer
