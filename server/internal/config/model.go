@@ -8,7 +8,7 @@ type Service struct {
 }
 
 type Category struct {
-	name					string 		`yaml:"name" json:"name"`
+	Name					string 		`yaml:"name" json:"name"`
 	Services			[]Service `yaml:"services" json:"services"`
 }
 
