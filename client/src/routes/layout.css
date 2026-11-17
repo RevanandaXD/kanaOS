@@ -1,2 +1,11 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
+
+@theme {
+    --font-roboto: 'Roboto', sans-serif;
+    --font-fira: 'Fira Code Variable', monospace;
+}
+
+* {
+    font-family: var(--font-fira);
+}
