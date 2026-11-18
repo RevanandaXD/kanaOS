@@ -17,6 +17,16 @@ export const wallpapers: WallpaperOption[] = [
 	{ id: 'default6', name: 'Default 6', src: '/wallpaper-default6.jpg' },
 	{ id: 'default7', name: 'Default 7', src: '/wallpaper-default7.jpg' },
 	{ id: 'default8', name: 'Default 8', src: '/wallpaper-default8.jpg' },
+	{ id: 'default9', name: 'Default 9', src: '/wallpaper-default9.jpg' },
+	{ id: 'default10', name: 'Default 10', src: '/wallpaper-default10.jpg' },
+	{ id: 'default11', name: 'Default 11', src: '/wallpaper-default11.jpg' },
+	{ id: 'default12', name: 'Default 12', src: '/wallpaper-default12.jpg' },
+	{ id: 'default13', name: 'Default 13', src: '/wallpaper-default13.jpg' },
+	{ id: 'default14', name: 'Default 14', src: '/wallpaper-default14.jpg' },
+	{ id: 'default15', name: 'Default 15', src: '/wallpaper-default15.jpg' },
+	{ id: 'default16', name: 'Default 16', src: '/wallpaper-default16.jpg' },
+	{ id: 'default17', name: 'Default 17', src: '/wallpaper-default17.jpg' },
+	{ id: 'default18', name: 'Default 18', src: '/wallpaper-default18.jpg' },
 ];
 
 const TRANSITIONS: WallpaperTransition[] = ['fade', 'tiles', 'wave'];
