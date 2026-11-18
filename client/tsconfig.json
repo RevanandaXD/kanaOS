@@ -1,6 +1,7 @@
 {
 	"extends": "$app/tsconfig",
 	"compilerOptions": {
+		"resolveJsonModule": true,
 		"strict": true,
 		"types": [
 			"$app/types",
