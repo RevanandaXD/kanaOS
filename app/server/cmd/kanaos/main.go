@@ -16,9 +16,15 @@ import (
 )
 
 func main() {
-	cfg, err := config.Load(env("CONFIG_PATH", "../config/service.yml"))
+	configPath := env("CONFIG_PATH", "../config/service.yml")
+	cfg, err := config.Load(configPath)
 	if err != nil {
-		log.Fatalf("Failed to load config: %v", err)
+		if errors.Is(err, os.ErrNotExist) {
+			log.Printf("Config %q tidak ditemukan, melanjutkan tanpa service config", configPath)
+			cfg = &config.Config{}
+		} else {
+			log.Fatalf("Failed to load config: %v", err)
+		}
 	}
 
 	dockerClient, err := docker.New()
