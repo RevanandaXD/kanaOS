@@ -1,0 +1,20 @@
+# Dependensi & artifact build
+**/node_modules
+**/.svelte-kit
+**/build
+**/dist
+.pnpm-store
+
+# Repo / environment
+.git
+.github
+.env
+.env.*
+**/.vscode
+**/.opencode
+
+# Binary & log
+*.exe
+kanaos
+kanaos.exe
+*.log

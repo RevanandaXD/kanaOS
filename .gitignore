@@ -9,17 +9,17 @@ node_modules/
 .pnpm-store/
 
 # SvelteKit / Vite
-client/.svelte-kit/
-client/build/
-client/dist/
-client/.vite/
+app/client/.svelte-kit/
+app/client/build/
+app/client/dist/
+app/client/.vite/
 
 # Go
-server/bin/
-server/dist/
-server/*.exe
-server/*.test
-server/coverage.out
+app/server/bin/
+app/server/dist/
+app/server/*.exe
+app/server/*.test
+app/server/coverage.out
 
 # Go workspace
 go.work

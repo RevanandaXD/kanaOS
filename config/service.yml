@@ -1,7 +1,0 @@
-categories:
-  - name: infrastructure
-    services:
-      - name: Portainer
-        description: Container Management
-        url: http://localhost:9000
-        icon: https://imgs.search.brave.com/1NYV30XBAGQzPuURP0jcY6uHi8NGUlGWonGkvp5UONE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/anNkZWxpdnIubmV0/L2doL3NlbGZoc3Qv/aWNvbnMvd2VicC9w/b3J0YWluZXIud2Vi/cA
