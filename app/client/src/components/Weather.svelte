@@ -3,7 +3,7 @@
 
 	const LAT = -6.2;
 	const LON = 106.8;
-	const PLACE = 'Lokasi saya';
+	const PLACE = 'My location';
 
 	type Current = {
 		temperature_2m: number;
@@ -16,12 +16,24 @@
 	let error = $state('');
 
 	const labels: Record<number, string> = {
-		0: 'Cerah', 1: 'Cerah berawan', 2: 'Berawan', 3: 'Mendung',
-		45: 'Berkabut', 48: 'Berkabut',
-		51: 'Gerimis', 53: 'Gerimis', 55: 'Gerimis',
-		61: 'Hujan ringan', 63: 'Hujan', 65: 'Hujan lebat',
-		80: 'Hujan lokal', 81: 'Hujan lokal', 82: 'Hujan deras',
-		95: 'Badai petir', 96: 'Badai petir', 99: 'Badai petir'
+		0: 'Clear',
+		1: 'Mostly clear',
+		2: 'Partly cloudy',
+		3: 'Overcast',
+		45: 'Fog',
+		48: 'Rime fog',
+		51: 'Light drizzle',
+		53: 'Drizzle',
+		55: 'Heavy drizzle',
+		61: 'Light rain',
+		63: 'Rain',
+		65: 'Heavy rain',
+		80: 'Rain showers',
+		81: 'Rain showers',
+		82: 'Heavy showers',
+		95: 'Thunderstorm',
+		96: 'Thunderstorm',
+		99: 'Thunderstorm'
 	};
 
 	onMount(() => {
@@ -35,7 +47,7 @@
 				current = (await res.json()).current;
 				error = '';
 			} catch {
-				error = 'Cuaca tidak tersedia';
+				error = 'Weather unavailable';
 			}
 		};
 		load();
@@ -44,24 +56,33 @@
 	});
 </script>
 
-<div class="rounded-lg border border-white/[0.06] bg-white/[0.04] p-5 backdrop-blur-lg">
-	<p class="text-xs font-medium tracking-wide text-blue-200/40 uppercase">{PLACE}</p>
+<div
+	class="rounded-xl border border-(--border-subtle) bg-(--surface-card) p-4 shadow-sm backdrop-blur-xl sm:p-5"
+>
+	<p class="text-xs font-medium tracking-wide text-(--text-muted) uppercase">{PLACE}</p>
 
 	{#if error}
-		<p class="mt-3 text-sm text-blue-200/35">{error}</p>
+		<p class="mt-3 text-sm text-(--text-muted)">{error}</p>
 	{:else if !current}
-		<p class="mt-3 text-sm text-blue-200/25">Memuat…</p>
+		<p class="mt-3 text-sm text-(--text-muted)">Loading…</p>
 	{:else}
 		<div class="mt-2 flex items-end justify-between">
-			<span class="text-4xl font-light text-blue-100/90">{Math.round(current.temperature_2m)}°</span>
-			<span class="pb-1 text-sm text-blue-200/50">{labels[current.weather_code] ?? '—'}</span>
+			<span class="text-3xl font-light text-(--text-primary) sm:text-4xl"
+				>{Math.round(current.temperature_2m)}°</span
+			>
+			<span class="pb-1 text-sm text-(--text-secondary)">{labels[current.weather_code] ?? '—'}</span
+			>
 		</div>
-		<div class="mt-4 grid grid-cols-2 gap-2 text-xs text-blue-200/40">
-			<div class="rounded-md bg-white/[0.03] px-3 py-2">
-				Kelembapan <span class="block text-sm font-medium text-blue-100/80">{current.relative_humidity_2m}%</span>
+		<div class="mt-4 grid grid-cols-2 gap-2 text-xs text-(--text-secondary)">
+			<div class="rounded-md bg-(--surface-inset) px-3 py-2">
+				Humidity <span class="mt-0.5 block text-sm font-medium text-(--text-primary)"
+					>{current.relative_humidity_2m}%</span
+				>
 			</div>
-			<div class="rounded-md bg-white/[0.03] px-3 py-2">
-				Angin <span class="block text-sm font-medium text-blue-100/80">{current.wind_speed_10m} km/j</span>
+			<div class="rounded-md bg-(--surface-inset) px-3 py-2">
+				Wind <span class="mt-0.5 block text-sm font-medium text-(--text-primary)"
+					>{current.wind_speed_10m} km/h</span
+				>
 			</div>
 		</div>
 	{/if}

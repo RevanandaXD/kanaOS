@@ -11,7 +11,7 @@
 	const link = $derived(containerLink(container));
 
 	const tone = $derived.by(() => {
-		if (container.state !== 'running') return 'bg-white/25';
+		if (container.state !== 'running') return 'bg-(--text-muted)';
 		if (container.health === 'unhealthy') return 'bg-rose-400';
 		if (container.health === 'starting') return 'bg-amber-400';
 		return 'bg-emerald-400';
@@ -39,30 +39,30 @@
 	href={link ?? undefined}
 	target={link ? '_blank' : undefined}
 	rel="noreferrer"
-	class="group flex flex-col gap-4 rounded-lg border border-white/6 bg-white/4 p-5 backdrop-blur-lg transition {link
-		? 'hover:border-white/12 hover:bg-white/[0.07]'
+	class="group flex flex-col gap-2 rounded-xl border border-(--border-subtle) bg-(--surface-card) p-2.5 shadow-sm backdrop-blur-xl transition sm:p-3 {link
+		? 'hover:-translate-y-0.5 hover:bg-(--surface-hover)'
 		: 'cursor-default'}"
 >
-	<div class="flex items-start justify-between gap-3">
+	<div class="flex items-start justify-between gap-2">
 		{#if icon && !iconFailed}
 			<img
 				src={icon}
 				alt=""
-				class="h-12 w-12 rounded-lg object-contain"
+				class="h-8 w-8 rounded-md object-contain sm:h-9 sm:w-9"
 				loading="lazy"
 				onerror={() => (iconFailed = true)}
 			/>
 		{:else}
 			<div
-				class="flex h-12 w-12 items-center justify-center rounded-lg bg-white/5 text-blue-200/40"
+				class="flex h-8 w-8 items-center justify-center rounded-md bg-(--surface-inset) text-(--text-muted) sm:h-9 sm:w-9"
 				aria-hidden="true"
 			>
-				<CubeIcon size={26} weight="duotone" />
+				<CubeIcon size={18} weight="duotone" />
 			</div>
 		{/if}
 
 		<span
-			class="flex items-center gap-1.5 rounded-full bg-white/4 px-2 py-1 text-[11px] text-blue-200/40"
+			class="flex items-center gap-1 rounded-full bg-(--surface-inset) px-1.5 py-0.5 text-[10px] text-(--text-secondary)"
 		>
 			<span class="h-1.5 w-1.5 rounded-full {tone}" aria-hidden="true"></span>
 			{container.state}
@@ -70,15 +70,20 @@
 	</div>
 
 	<div class="min-w-0 flex-1">
-		<h3 class="truncate text-sm font-semibold text-blue-100/90">{title}</h3>
-		<p class="mt-1 line-clamp-2 text-sm leading-snug text-blue-200/35" title={container.image}>
+		<h3 class="truncate text-xs font-semibold text-(--text-primary) sm:text-[13px]">{title}</h3>
+		<p
+			class="mt-0.5 line-clamp-1 text-[11px] leading-snug text-(--text-muted) sm:line-clamp-2 sm:text-xs"
+			title={container.image}
+		>
 			{container.image}
 		</p>
 
 		{#if container.ports.length > 0}
-			<div class="mt-3 flex flex-wrap gap-1">
+			<div class="mt-1.5 flex flex-wrap gap-1">
 				{#each container.ports as port (portLabel(port))}
-					<span class="rounded bg-white/5 px-1.5 py-0.5 font-mono text-[11px] text-blue-200/45">
+					<span
+						class="rounded bg-(--surface-inset) px-1.5 py-px font-mono text-[10px] text-(--text-secondary)"
+					>
 						{portLabel(port)}
 					</span>
 				{/each}
@@ -87,7 +92,7 @@
 	</div>
 
 	<p
-		class="truncate border-t border-white/6 pt-3 text-xs text-blue-200/25 group-hover:text-blue-200/45"
+		class="truncate border-t border-(--border-subtle) pt-1.5 text-[10px] text-(--text-muted) group-hover:text-(--text-secondary) sm:text-[11px]"
 	>
 		{link ?? container.status}
 	</p>

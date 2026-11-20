@@ -2,19 +2,19 @@
 	let today = $state(new Date());
 	let view = $state(new Date(today.getFullYear(), today.getMonth(), 1));
 
-	// perbarui "hari ini" tiap menit (supaya ganti hari tetap akurat)
+	// refresh "today" every minute so day changes stay accurate
 	$effect(() => {
 		const id = setInterval(() => (today = new Date()), 60_000);
 		return () => clearInterval(id);
 	});
 
-	const weekdays = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+	const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 	const title = $derived(
-		view.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })
+		view.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
 	);
 
-	// grid 7 kolom, minggu dimulai Senin, termasuk tanggal bulan sebelum/sesudahnya
+	// 7-column grid, week starts Monday, includes days from previous/next months
 	const cells = $derived.by(() => {
 		const y = view.getFullYear();
 		const m = view.getMonth();
@@ -38,13 +38,13 @@
 	}
 </script>
 
-<div class="rounded-lg border border-white/6 bg-white/4 p-4 backdrop-blur-lg">
+<div class="rounded-xl border border-(--border-subtle) bg-(--surface-card) p-4 shadow-sm backdrop-blur-xl">
 	<div class="mb-3 flex items-center justify-between">
 		<button
 			type="button"
 			onclick={reset}
-			title="Kembali ke bulan ini"
-			class="text-sm font-medium text-blue-100/90 capitalize hover:text-blue-50"
+			title="Back to current month"
+			class="text-sm font-medium capitalize text-(--text-primary) hover:text-(--accent)"
 		>
 			{title}
 		</button>
@@ -53,16 +53,16 @@
 			<button
 				type="button"
 				onclick={() => shift(-1)}
-				aria-label="Bulan sebelumnya"
-				class="flex h-6 w-6 items-center justify-center rounded-md text-blue-200/50 hover:bg-white/8 hover:text-blue-100"
+				aria-label="Previous month"
+				class="flex h-7 w-7 items-center justify-center rounded-md text-(--text-secondary) hover:bg-(--surface-hover) hover:text-(--text-primary)"
 			>
 				<svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
 			</button>
 			<button
 				type="button"
 				onclick={() => shift(1)}
-				aria-label="Bulan berikutnya"
-				class="flex h-6 w-6 items-center justify-center rounded-md text-blue-200/50 hover:bg-white/8 hover:text-blue-100"
+				aria-label="Next month"
+				class="flex h-7 w-7 items-center justify-center rounded-md text-(--text-secondary) hover:bg-(--surface-hover) hover:text-(--text-primary)"
 			>
 				<svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
 			</button>
@@ -71,17 +71,17 @@
 
 	<div class="grid grid-cols-7 gap-y-1 text-center text-xs">
 		{#each weekdays as w (w)}
-			<span class="pb-1 text-[10px] tracking-wide text-blue-200/30 uppercase">{w}</span>
+			<span class="pb-1 text-[10px] tracking-wide text-(--text-muted) uppercase">{w}</span>
 		{/each}
 
 		{#each cells as cell (cell.date.getTime())}
 			<span
 				class="mx-auto flex h-7 w-7 items-center justify-center rounded-md tabular-nums
 				{isToday(cell.date)
-					? 'bg-blue-400/25 font-medium text-blue-50 ring-1 ring-blue-300/40'
+					? 'bg-(--accent-soft) font-medium text-(--accent) ring-1 ring-(--accent)/30'
 					: cell.current
-						? 'text-blue-100/70 hover:bg-white/8'
-						: 'text-blue-200/20'}"
+						? 'text-(--text-primary) hover:bg-(--surface-hover)'
+						: 'text-(--text-muted) opacity-60'}"
 			>
 				{cell.day}
 			</span>

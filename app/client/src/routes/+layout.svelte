@@ -18,7 +18,7 @@
 	<title>KanaOS</title>
 </svelte:head>
 
-<div class="app-root relative min-h-screen overflow-hidden text-blue-100 transition-colors">
+<div class="app-root relative min-h-screen overflow-hidden text-(--text-primary) transition-colors">
 	<div class="pointer-events-none fixed inset-0 z-0">
 		<div
 			class="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -54,10 +54,10 @@
 	</div>
 
 	<div class="relative z-10">
-		<div class="px-4 pt-4 sm:px-6">
+		<div class="px-3 pt-3 sm:px-6 sm:pt-4">
 			<Navbar />
 		</div>
-		<main class="mx-auto max-w-7xl py-7.5">
+		<main class="mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-6 lg:py-7">
 			{@render children()}
 		</main>
 	</div>

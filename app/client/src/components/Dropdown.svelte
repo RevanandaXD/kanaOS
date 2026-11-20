@@ -29,9 +29,9 @@
 		{ id: 'about', label: 'About', icon: InfoIcon }
 	];
 
-	let active = $state('wallpaper');
+	let active = $state('systemInformation');
 
-	const isLight = $derived(themeStore.current === 'light');
+	// styling driven by CSS theme variables
 
 	let systemInfo = $state<SystemInfo | null>(null);
 	let systemError = $state('');
@@ -44,7 +44,7 @@
 		try {
 			systemInfo = await getSystem();
 		} catch (err) {
-			systemError = err instanceof Error ? err.message : 'Gagal memuat info sistem';
+			systemError = err instanceof Error ? err.message : 'Failed to load system information';
 		} finally {
 			systemLoading = false;
 		}
@@ -69,9 +69,9 @@
 		const h = Math.floor((seconds % 86400) / 3600);
 		const m = Math.floor((seconds % 3600) / 60);
 		const parts: string[] = [];
-		if (d) parts.push(`${d} hari`);
-		if (h) parts.push(`${h} jam`);
-		if (m || parts.length === 0) parts.push(`${m} mnt`);
+		if (d) parts.push(`${d}d`);
+		if (h) parts.push(`${h}h`);
+		if (m || parts.length === 0) parts.push(`${m}m`);
 		return parts.join(' ');
 	}
 
@@ -82,15 +82,11 @@
 </script>
 
 <div
-	class="flex h-105 w-180 max-w-[90vw] overflow-hidden rounded-xl border shadow-2xl backdrop-blur-xl {isLight
-		? 'border-slate-200/70 bg-white/90 text-slate-800'
-		: 'border-white/10 bg-[#0f1424]/95 text-blue-100'}"
+	class="flex h-[min(80vh,26rem)] w-full max-w-[min(92vw,45rem)] overflow-hidden rounded-2xl border border-(--border-subtle) bg-(--surface-card) text-(--text-primary) shadow-2xl backdrop-blur-xl"
 >
 	<!-- Sidebar -->
 	<aside
-		class="flex w-14 shrink-0 flex-col items-center border-r py-3 {isLight
-			? 'border-slate-200/70 bg-slate-100/70'
-			: 'border-white/10 bg-white/3'}"
+		class="flex w-13 shrink-0 flex-col items-center border-r border-(--border-subtle) bg-(--surface-inset) py-3 sm:w-14"
 	>
 		<nav class="flex flex-1 flex-col items-center gap-2">
 			{#each menuItems as item (item.id)}
@@ -100,14 +96,9 @@
 					onclick={() => (active = item.id)}
 					title={item.label}
 					aria-label={item.label}
-					class="flex h-9 w-9 items-center justify-center rounded-lg transition-colors {active ===
-					item.id
-						? isLight
-							? 'bg-slate-900/10 text-slate-900'
-							: 'bg-white/10 text-blue-50'
-						: isLight
-							? 'text-slate-500 hover:bg-slate-900/5 hover:text-slate-800'
-							: 'text-blue-200/60 hover:bg-white/6 hover:text-blue-100/90'}"
+					class="flex h-9 w-9 items-center justify-center rounded-lg transition-colors {active === item.id
+						? 'bg-(--accent-soft) text-(--accent)'
+						: 'text-(--text-muted) hover:bg-(--surface-hover) hover:text-(--text-primary)'}"
 				>
 					<Icon size={18} weight={active === item.id ? 'fill' : 'regular'} />
 				</button>
@@ -119,24 +110,24 @@
 	<section class="flex min-w-0 flex-1 flex-col">
 		<!-- Wallpaper Section -->
 		{#if active === 'wallpaper'}
-			<header class="flex items-center gap-3 border-b border-white/10 px-5 py-4">
+			<header class="flex items-center gap-3 border-b border-(--border-subtle) px-4 py-3 sm:px-5 sm:py-4">
 				<ImageIcon size={20} />
 				<div>
-					<h2 class="text-sm font-semibold text-blue-100/90">Wallpaper</h2>
-					<p class="text-xs text-blue-200/40">Pilih gambar latar default dari folder static</p>
+					<h2 class="text-sm font-semibold text-(--text-primary)">Wallpaper</h2>
+					<p class="text-xs text-(--text-secondary)">Choose a default background from the static folder</p>
 				</div>
 			</header>
 
-			<div class="flex-1 overflow-y-auto p-5">
-				<div class="grid grid-cols-1 gap-2 sm:grid-cols-4">
+			<div class="flex-1 overflow-y-auto p-4 sm:p-5">
+				<div class="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
 					{#each wallpapers as wp (wp.id)}
 						<button
 							type="button"
 							onclick={() => wallpaperStore.setWallpaper(wp.src)}
 							class="group overflow-hidden rounded-lg border text-left transition {wallpaperStore.current ===
 							wp.src
-								? 'border-blue-300/50 bg-white/8 ring-1 ring-blue-300/30'
-								: 'border-white/10 bg-white/3 hover:border-white/25 hover:bg-white/6'}"
+								? 'border-(--accent)/50 bg-(--accent-soft) ring-1 ring-(--accent)/30'
+								: 'border-(--border-subtle) bg-(--surface-inset) hover:border-(--text-muted)/40 hover:bg-(--surface-hover)'}"
 						>
 							<div class="aspect-video w-full overflow-hidden">
 								<img
@@ -153,33 +144,33 @@
 
 			<!-- Appearance Section -->
 		{:else if active === 'appearance'}
-			<header class="flex items-center gap-3 border-b border-white/10 px-5 py-4">
+			<header class="flex items-center gap-3 border-b border-(--border-subtle) px-4 py-3 sm:px-5 sm:py-4">
 				<PaletteIcon size={20} />
 				<div>
-					<h2 class="text-sm font-semibold text-blue-100/90">Appearance</h2>
-					<p class="text-xs text-blue-200/40">Sesuaikan tampilan antarmuka</p>
+					<h2 class="text-sm font-semibold text-(--text-primary)">Appearance</h2>
+					<p class="text-xs text-(--text-secondary)">Customize the interface appearance</p>
 				</div>
 			</header>
-			<div class="flex-1 space-y-4 overflow-y-auto p-5 text-sm text-blue-200/60">
+			<div class="flex-1 space-y-4 overflow-y-auto p-4 text-sm text-(--text-secondary) sm:p-5">
 				<div
-					class="flex items-center justify-between rounded-lg border border-white/10 bg-white/3 px-4 py-3"
+					class="flex items-center justify-between rounded-lg border border-(--border-subtle) bg-(--surface-inset) px-4 py-3"
 				>
 					<div>
-						<p class="text-blue-100/85">Tema</p>
-						<p class="text-xs text-blue-200/40">
-							{themeStore.current === 'dark' ? 'Mode gelap aktif' : 'Mode terang aktif'}
+						<p class="text-(--text-primary)">Theme</p>
+						<p class="text-xs text-(--text-secondary)">
+							{themeStore.current === 'dark' ? 'Dark mode active' : 'Light mode active'}
 						</p>
 					</div>
 					<button
 						type="button"
 						role="switch"
 						aria-checked={themeStore.current === 'light'}
-						aria-label="Toggle tema light/dark"
+						aria-label="Toggle light/dark theme"
 						onclick={() => themeStore.toggle()}
-						class="relative inline-flex h-7 w-13 items-center rounded-full border border-white/10 transition-colors {themeStore.current ===
+						class="relative inline-flex h-7 w-13 items-center rounded-full border border-(--border-subtle) transition-colors {themeStore.current ===
 						'light'
-							? 'bg-blue-400/70'
-							: 'bg-white/10'}"
+							? 'bg-(--accent)'
+							: 'bg-(--surface-hover)'}"
 					>
 						<span
 							class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white text-slate-700 shadow transition-transform {themeStore.current ===
@@ -196,111 +187,111 @@
 					</button>
 				</div>
 				<div
-					class="flex items-center justify-between rounded-lg border border-white/10 bg-white/3 px-4 py-3"
+					class="flex items-center justify-between rounded-lg border border-(--border-subtle) bg-(--surface-inset) px-4 py-3"
 				>
 					<div>
-						<p class="text-blue-100/85">Aksen</p>
-						<p class="text-xs text-blue-200/40">Warna aksen utama</p>
+						<p class="text-(--text-primary)">Accent</p>
+						<p class="text-xs text-(--text-secondary)">Primary accent color</p>
 					</div>
-					<span class="h-5 w-5 rounded-full bg-blue-400/80 ring-2 ring-white/10"></span>
+					<span class="h-5 w-5 rounded-full bg-(--accent) ring-2 ring-(--border-subtle)"></span>
 				</div>
 			</div>
 
 			<!-- General Section -->
 		{:else if active === 'general'}
-			<header class="flex items-center gap-3 border-b border-white/10 px-5 py-4">
+			<header class="flex items-center gap-3 border-b border-(--border-subtle) px-4 py-3 sm:px-5 sm:py-4">
 				<GearIcon size={20} />
 				<div>
-					<h2 class="text-sm font-semibold text-blue-100/90">General</h2>
-					<p class="text-xs text-blue-200/40">Pengaturan umum sistem</p>
+					<h2 class="text-sm font-semibold text-(--text-primary)">General</h2>
+					<p class="text-xs text-(--text-secondary)">General system settings</p>
 				</div>
 			</header>
-			<div class="flex-1 space-y-3 overflow-y-auto p-5 text-sm">
-				<div class="rounded-lg border border-white/10 bg-white/3 px-4 py-3">
-					<p class="text-blue-100/85">Bahasa</p>
-					<p class="mt-0.5 text-xs text-blue-200/40">Indonesia</p>
+			<div class="flex-1 space-y-3 overflow-y-auto p-4 text-sm sm:p-5">
+				<div class="rounded-lg border border-(--border-subtle) bg-(--surface-inset) px-4 py-3">
+					<p class="text-(--text-primary)">Language</p>
+					<p class="mt-0.5 text-xs text-(--text-secondary)">English</p>
 				</div>
-				<div class="rounded-lg border border-white/10 bg-white/3 px-4 py-3">
-					<p class="text-blue-100/85">Zona waktu</p>
-					<p class="mt-0.5 text-xs text-blue-200/40">Otomatis (sistem)</p>
+				<div class="rounded-lg border border-(--border-subtle) bg-(--surface-inset) px-4 py-3">
+					<p class="text-(--text-primary)">Time zone</p>
+					<p class="mt-0.5 text-xs text-(--text-secondary)">Automatic (system)</p>
 				</div>
 			</div>
 
 			<!-- System Information Section -->
 		{:else if active === 'systemInformation'}
-			<header class="flex items-center gap-3 border-b border-white/10 px-5 py-4">
+			<header class="flex items-center gap-3 border-b border-(--border-subtle) px-4 py-3 sm:px-5 sm:py-4">
 				<DesktopIcon size={20} />
 				<div>
-					<h2 class="text-sm font-semibold text-blue-100/90">System Information</h2>
-					<p class="text-xs text-blue-200/40">Informasi host dan sumber daya sistem</p>
+					<h2 class="text-sm font-semibold text-(--text-primary)">System Information</h2>
+					<p class="text-xs text-(--text-secondary)">Host and system resource information</p>
 				</div>
 			</header>
 
-			<div class="flex-1 space-y-4 overflow-y-auto p-5 text-sm">
+			<div class="flex-1 space-y-4 overflow-y-auto p-4 text-sm sm:p-5">
 				{#if systemLoading && !systemInfo}
-					<p class="text-blue-200/40">Memuat informasi sistem…</p>
+					<p class="text-(--text-secondary)">Loading system information…</p>
 				{:else if systemError && !systemInfo}
 					<div class="rounded-lg border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-rose-200/80">
-						<p class="font-medium">Tidak dapat memuat info sistem</p>
+						<p class="font-medium">Unable to load system information</p>
 						<p class="mt-1 text-xs text-rose-200/60">{systemError}</p>
 						<button
 							type="button"
-							class="mt-2 text-xs text-blue-200/70 underline underline-offset-2 hover:text-blue-100"
+							class="mt-2 text-xs text-(--text-secondary) underline underline-offset-2 hover:text-(--text-primary)"
 							onclick={() => {
 								systemInfo = null;
 								void loadSystem();
 							}}
 						>
-							Coba lagi
+							Try again
 						</button>
 					</div>
 				{:else if systemInfo}
 					<div class="grid gap-3 sm:grid-cols-2">
-						<div class="rounded-lg border border-white/10 bg-white/3 px-4 py-3">
-							<p class="text-[11px] tracking-wide text-blue-200/40 uppercase">OS</p>
-							<p class="mt-1 font-medium text-blue-100/90" title={systemInfo.os}>{systemInfo.os || '-'}</p>
+						<div class="rounded-lg border border-(--border-subtle) bg-(--surface-inset) px-4 py-3">
+							<p class="text-[11px] tracking-wide text-(--text-secondary) uppercase">OS</p>
+							<p class="mt-1 font-medium text-(--text-primary)" title={systemInfo.os}>{systemInfo.os || '-'}</p>
 						</div>
-						<div class="rounded-lg border border-white/10 bg-white/3 px-4 py-3">
-							<p class="text-[11px] tracking-wide text-blue-200/40 uppercase">Host</p>
-							<p class="mt-1 font-medium text-blue-100/90">{systemInfo.hostname || '-'}</p>
+						<div class="rounded-lg border border-(--border-subtle) bg-(--surface-inset) px-4 py-3">
+							<p class="text-[11px] tracking-wide text-(--text-secondary) uppercase">Host</p>
+							<p class="mt-1 font-medium text-(--text-primary)">{systemInfo.hostname || '-'}</p>
 						</div>
-						<div class="rounded-lg border border-white/10 bg-white/3 px-4 py-3">
-							<p class="text-[11px] tracking-wide text-blue-200/40 uppercase">Kernel</p>
-							<p class="mt-1 font-medium text-blue-100/90">{systemInfo.kernel || '-'}</p>
+						<div class="rounded-lg border border-(--border-subtle) bg-(--surface-inset) px-4 py-3">
+							<p class="text-[11px] tracking-wide text-(--text-secondary) uppercase">Kernel</p>
+							<p class="mt-1 font-medium text-(--text-primary)">{systemInfo.kernel || '-'}</p>
 						</div>
-						<div class="rounded-lg border border-white/10 bg-white/3 px-4 py-3">
-							<p class="text-[11px] tracking-wide text-blue-200/40 uppercase">Arsitektur</p>
-							<p class="mt-1 font-medium text-blue-100/90">{systemInfo.arch || '-'}</p>
+						<div class="rounded-lg border border-(--border-subtle) bg-(--surface-inset) px-4 py-3">
+							<p class="text-[11px] tracking-wide text-(--text-secondary) uppercase">Architecture</p>
+							<p class="mt-1 font-medium text-(--text-primary)">{systemInfo.arch || '-'}</p>
 						</div>
 					</div>
 
-					<div class="space-y-3 rounded-lg border border-white/10 bg-white/3 p-4">
+					<div class="space-y-3 rounded-lg border border-(--border-subtle) bg-(--surface-inset) p-4">
 						<div class="flex items-start gap-3">
-							<CpuIcon size={18} class="mt-0.5 shrink-0 text-blue-200/50" />
+							<CpuIcon size={18} class="mt-0.5 shrink-0 text-(--text-secondary)" />
 							<div class="min-w-0 flex-1">
 								<div class="flex items-baseline justify-between gap-2">
-									<p class="text-blue-100/85">CPU</p>
-									<p class="text-xs text-blue-200/40">{systemInfo.cpus} core</p>
+									<p class="text-(--text-primary)">CPU</p>
+									<p class="text-xs text-(--text-secondary)">{systemInfo.cpus} core</p>
 								</div>
-								<p class="mt-0.5 truncate text-xs text-blue-200/45" title={systemInfo.cpu_model}>
-									{systemInfo.cpu_model || 'Model tidak diketahui'}
+								<p class="mt-0.5 truncate text-xs text-(--text-secondary)" title={systemInfo.cpu_model}>
+									{systemInfo.cpu_model || 'Unknown model'}
 								</p>
 							</div>
 						</div>
 
 						<div class="flex items-start gap-3">
-							<MemoryIcon size={18} class="mt-0.5 shrink-0 text-blue-200/50" />
+							<MemoryIcon size={18} class="mt-0.5 shrink-0 text-(--text-secondary)" />
 							<div class="min-w-0 flex-1">
 								<div class="flex items-baseline justify-between gap-2">
-									<p class="text-blue-100/85">Memori</p>
-									<p class="text-xs text-blue-200/40">
+									<p class="text-(--text-primary)">Memory</p>
+									<p class="text-xs text-(--text-secondary)">
 										{formatBytes(systemInfo.mem_used)} / {formatBytes(systemInfo.mem_total)}
-										<span class="text-blue-200/30">({percent(systemInfo.mem_used, systemInfo.mem_total)}%)</span>
+										<span class="text-(--text-muted)">({percent(systemInfo.mem_used, systemInfo.mem_total)}%)</span>
 									</p>
 								</div>
-								<div class="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
+								<div class="mt-2 h-1.5 overflow-hidden rounded-full bg-(--surface-hover)">
 									<div
-										class="h-full rounded-full bg-blue-400/70"
+										class="h-full rounded-full bg-(--accent)"
 										style="width: {percent(systemInfo.mem_used, systemInfo.mem_total)}%"
 									></div>
 								</div>
@@ -310,16 +301,16 @@
 						{#if systemInfo.disks?.length}
 							{@const disk = systemInfo.disks[0]}
 							<div class="flex items-start gap-3">
-								<HardDriveIcon size={18} class="mt-0.5 shrink-0 text-blue-200/50" />
+								<HardDriveIcon size={18} class="mt-0.5 shrink-0 text-(--text-secondary)" />
 								<div class="min-w-0 flex-1">
 									<div class="flex items-baseline justify-between gap-2">
-										<p class="text-blue-100/85">Disk ({disk.path})</p>
-										<p class="text-xs text-blue-200/40">
+										<p class="text-(--text-primary)">Disk ({disk.path})</p>
+										<p class="text-xs text-(--text-secondary)">
 											{formatBytes(disk.used)} / {formatBytes(disk.total)}
-											<span class="text-blue-200/30">({percent(disk.used, disk.total)}%)</span>
+											<span class="text-(--text-muted)">({percent(disk.used, disk.total)}%)</span>
 										</p>
 									</div>
-									<div class="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
+									<div class="mt-2 h-1.5 overflow-hidden rounded-full bg-(--surface-hover)">
 										<div
 											class="h-full rounded-full bg-emerald-400/60"
 											style="width: {percent(disk.used, disk.total)}%"
@@ -330,11 +321,11 @@
 						{/if}
 
 						<div class="flex items-start gap-3">
-							<ClockIcon size={18} class="mt-0.5 shrink-0 text-blue-200/50" />
+							<ClockIcon size={18} class="mt-0.5 shrink-0 text-(--text-secondary)" />
 							<div class="min-w-0 flex-1">
 								<div class="flex items-baseline justify-between gap-2">
-									<p class="text-blue-100/85">Uptime</p>
-									<p class="text-xs text-blue-200/45">{formatUptime(systemInfo.uptime)}</p>
+									<p class="text-(--text-primary)">Uptime</p>
+									<p class="text-xs text-(--text-secondary)">{formatUptime(systemInfo.uptime)}</p>
 								</div>
 							</div>
 						</div>
@@ -344,26 +335,26 @@
 
 			<!-- About Section -->
 		{:else}
-			<header class="flex items-center gap-3 border-b border-white/10 px-5 py-4">
+			<header class="flex items-center gap-3 border-b border-(--border-subtle) px-4 py-3 sm:px-5 sm:py-4">
 				<InfoIcon size={20} />
 				<div>
-					<h2 class="text-sm font-semibold text-blue-100/90">About</h2>
-					<p class="text-xs text-blue-200/40">Informasi aplikasi</p>
+					<h2 class="text-sm font-semibold text-(--text-primary)">About</h2>
+					<p class="text-xs text-(--text-secondary)">Application information</p>
 				</div>
 			</header>
-			<div class="flex-1 overflow-y-auto p-5">
+			<div class="flex-1 overflow-y-auto p-4 sm:p-5">
 				<div
-					class="flex flex-col items-center gap-5 rounded-lg border border-white/10 bg-white/3 p-4 sm:flex-row sm:gap-6"
+					class="flex flex-col items-center gap-5 rounded-lg border border-(--border-subtle) bg-(--surface-inset) p-4 sm:flex-row sm:gap-6"
 				>
 					<img src="./Logo.png" alt="Logo KanaOS" class="h-35 w-auto shrink-0 object-contain" />
 
 					<section class="min-w-0 text-center sm:text-left">
-						<h2 class="text-base font-semibold text-blue-100/90">KanaOS</h2>
-						<p class="mt-1 text-xs text-blue-200/50">
-							Dashboard pribadi untuk mengelola layanan dan tampilan sistem.
+						<h2 class="text-base font-semibold text-(--text-primary)">KanaOS</h2>
+						<p class="mt-1 text-xs text-(--text-secondary)">
+							A personal dashboard for managing services and system appearance.
 						</p>
 
-						<p class="mt-4 text-xs text-blue-200/30">Version {version} | Made by {author}</p>
+						<p class="mt-4 text-xs text-(--text-muted)">Version {version} | Made by {author}</p>
 					</section>
 				</div>
 			</div>

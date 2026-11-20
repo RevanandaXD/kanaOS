@@ -7,18 +7,27 @@
 	});
 
 	const time = $derived(
-		now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false })
+		now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false })
 	);
 	const seconds = $derived(String(now.getSeconds()).padStart(2, '0'));
 	const date = $derived(
-		now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+		now.toLocaleDateString('en-US', {
+			weekday: 'long',
+			day: 'numeric',
+			month: 'long',
+			year: 'numeric'
+		})
 	);
 </script>
 
-<div class="rounded-lg border border-white/6 bg-white/4 p-5 backdrop-blur-lg">
-	<div class="flex items-baseline gap-1 font-light tracking-tight text-blue-100/90 tabular-nums">
-		<span class="text-5xl">{time}</span>
-		<span class="text-lg text-blue-200/30">{seconds}</span>
+<div
+	class="rounded-xl border border-(--border-subtle) bg-(--surface-card) p-4 shadow-sm backdrop-blur-xl sm:p-5"
+>
+	<div
+		class="flex items-baseline gap-1 font-light tracking-tight text-(--text-primary) tabular-nums"
+	>
+		<span class="text-4xl sm:text-5xl">{time}</span>
+		<span class="text-base text-(--text-muted) sm:text-lg">{seconds}</span>
 	</div>
-	<p class="mt-2 text-sm text-blue-200/40">{date}</p>
+	<p class="mt-2 text-xs text-(--text-secondary) sm:text-sm">{date}</p>
 </div>
