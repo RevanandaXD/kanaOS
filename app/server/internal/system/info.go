@@ -6,7 +6,6 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
-	"syscall"
 )
 
 type Disk struct {
@@ -166,20 +165,6 @@ func memValue(line, key string) (uint64, bool) {
 	}
 	// /proc/meminfo values are in kB
 	return v * 1024, true
-}
-
-func readDisk(path string) (Disk, bool) {
-	var st syscall.Statfs_t
-	if err := syscall.Statfs(path, &st); err != nil {
-		return Disk{}, false
-	}
-	bsize := uint64(st.Bsize)
-	total := uint64(st.Blocks) * bsize
-	free := uint64(st.Bavail) * bsize
-	if total == 0 || free > total {
-		return Disk{}, false
-	}
-	return Disk{Path: path, Total: total, Used: total - free}, true
 }
 
 func cutPrefix(s, prefix string) (string, bool) {
