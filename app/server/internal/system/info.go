@@ -16,18 +16,18 @@ type Disk struct {
 }
 
 type Info struct {
-	OS        string  `json:"os"`
-	Hostname  string  `json:"hostname"`
-	Kernel    string  `json:"kernel"`
-	Arch      string  `json:"arch"`
-	Uptime    uint64  `json:"uptime"`
-	CPUs      int     `json:"cpus"`
-	CPUModel  string  `json:"cpu_model"`
-	CPUUsage  float64 `json:"cpu_usage"` // persentase CPU usage (0 - 100)
-	MemTotal  uint64  `json:"mem_total"`
-	MemUsed   uint64  `json:"mem_used"`
-	MemUsage  float64 `json:"mem_usage"` // persentase RAM usage (0 - 100)
-	Disks     []Disk  `json:"disks"`
+	OS       string  `json:"os"`
+	Hostname string  `json:"hostname"`
+	Kernel   string  `json:"kernel"`
+	Arch     string  `json:"arch"`
+	Uptime   uint64  `json:"uptime"`
+	CPUs     int     `json:"cpus"`
+	CPUModel string  `json:"cpu_model"`
+	CPUUsage float64 `json:"cpu_usage"` // persentase CPU usage (0 - 100)
+	MemTotal uint64  `json:"mem_total"`
+	MemUsed  uint64  `json:"mem_used"`
+	MemUsage float64 `json:"mem_usage"` // persentase RAM usage (0 - 100)
+	Disks    []Disk  `json:"disks"`
 }
 
 type cpuSample struct {
