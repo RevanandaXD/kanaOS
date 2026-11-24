@@ -4,8 +4,6 @@ set -eu
 : "${PORT:=8080}"
 export PORT
 
-# SvelteKit (adapter-node) melayani UI di port 3000.
-# Go melayani /api di $PORT dan me-proxy sisanya ke UI.
 PORT=3000 HOST=127.0.0.1 node /app/web/build/index.js &
 web_pid=$!
 
