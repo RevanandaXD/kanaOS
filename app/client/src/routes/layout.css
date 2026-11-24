@@ -36,7 +36,7 @@
 
 :root[data-theme='dark'],
 :root:not([data-theme='light']) {
-	--surface-card: rgba(30, 36, 52, 0.82);
+	--surface-card: rgba(30, 36, 52);
 	--surface-nav: rgba(30, 36, 52, 0.88);
 	--surface-inset: rgba(255, 255, 255, 0.04);
 	--surface-hover: rgba(255, 255, 255, 0.07);

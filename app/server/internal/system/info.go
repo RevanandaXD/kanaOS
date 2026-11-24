@@ -6,6 +6,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 type Disk struct {
@@ -15,17 +16,29 @@ type Disk struct {
 }
 
 type Info struct {
-	OS       string `json:"os"`
-	Hostname string `json:"hostname"`
-	Kernel   string `json:"kernel"`
-	Arch     string `json:"arch"`
-	Uptime   uint64 `json:"uptime"`
-	CPUs     int    `json:"cpus"`
-	CPUModel string `json:"cpu_model"`
-	MemTotal uint64 `json:"mem_total"`
-	MemUsed  uint64 `json:"mem_used"`
-	Disks    []Disk `json:"disks"`
+	OS        string  `json:"os"`
+	Hostname  string  `json:"hostname"`
+	Kernel    string  `json:"kernel"`
+	Arch      string  `json:"arch"`
+	Uptime    uint64  `json:"uptime"`
+	CPUs      int     `json:"cpus"`
+	CPUModel  string  `json:"cpu_model"`
+	CPUUsage  float64 `json:"cpu_usage"` // persentase CPU usage (0 - 100)
+	MemTotal  uint64  `json:"mem_total"`
+	MemUsed   uint64  `json:"mem_used"`
+	MemUsage  float64 `json:"mem_usage"` // persentase RAM usage (0 - 100)
+	Disks     []Disk  `json:"disks"`
 }
+
+type cpuSample struct {
+	idle  uint64
+	total uint64
+}
+
+var (
+	cpuMu       sync.Mutex
+	lastCPUTick cpuSample
+)
 
 func Collect() Info {
 	host, _ := os.Hostname()
@@ -48,15 +61,71 @@ func Collect() Info {
 	if model := readCPUModel(); model != "" {
 		info.CPUModel = model
 	}
+	info.CPUUsage = readCPUUsage()
 	if total, used, ok := readMemInfo(); ok {
 		info.MemTotal = total
 		info.MemUsed = used
+		if total > 0 {
+			info.MemUsage = float64(used) / float64(total) * 100.0
+		}
 	}
 	if disk, ok := readDisk("/"); ok {
 		info.Disks = []Disk{disk}
 	}
 
 	return info
+}
+
+func readCPUUsage() float64 {
+	f, err := os.Open("/proc/stat")
+	if err != nil {
+		return 0
+	}
+	defer f.Close()
+
+	sc := bufio.NewScanner(f)
+	for sc.Scan() {
+		line := sc.Text()
+		if strings.HasPrefix(line, "cpu ") {
+			fields := strings.Fields(line)
+			if len(fields) < 5 {
+				return 0
+			}
+
+			var total, idle uint64
+			for i := 1; i < len(fields); i++ {
+				val, _ := strconv.ParseUint(fields[i], 10, 64)
+				total += val
+				if i == 4 { // idle is the 4th field after "cpu"
+					idle = val
+				}
+			}
+
+			cpuMu.Lock()
+			prev := lastCPUTick
+			lastCPUTick = cpuSample{idle: idle, total: total}
+			cpuMu.Unlock()
+
+			if prev.total == 0 || total <= prev.total {
+				return 0
+			}
+
+			totalDelta := float64(total - prev.total)
+			idleDelta := float64(idle - prev.idle)
+			if totalDelta == 0 {
+				return 0
+			}
+
+			usage := (1.0 - (idleDelta / totalDelta)) * 100.0
+			if usage < 0 {
+				usage = 0
+			} else if usage > 100 {
+				usage = 100
+			}
+			return usage
+		}
+	}
+	return 0
 }
 
 func readOSRelease() string {

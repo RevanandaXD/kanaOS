@@ -12,8 +12,10 @@ export interface SystemInfo {
 	uptime: number;
 	cpus: number;
 	cpu_model: string;
+	cpu_usage?: number;
 	mem_total: number;
 	mem_used: number;
+	mem_usage?: number;
 	disks: DiskInfo[];
 }
 

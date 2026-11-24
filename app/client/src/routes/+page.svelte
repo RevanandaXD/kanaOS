@@ -95,7 +95,7 @@
 					</p>
 				{/if}
 
-				<div class="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-2.5 xl:grid-cols-3">
+				<div class="grid grid-cols-2 gap-2 sm:grid-cols-2 sm:gap-2.5 xl:grid-cols-3">
 					{#each containers as container (container.id)}
 						<ContainerStatus {container} />
 					{/each}

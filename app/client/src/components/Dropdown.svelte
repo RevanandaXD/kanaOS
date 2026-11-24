@@ -10,6 +10,7 @@
 	import MemoryIcon from 'phosphor-svelte/lib/Memory';
 	import HardDriveIcon from 'phosphor-svelte/lib/HardDrive';
 	import ClockIcon from 'phosphor-svelte/lib/Clock';
+	import Gauge from './Gauge.svelte';
 	import { wallpaperStore, wallpapers } from '#lib/wallpaper.svelte.ts';
 	import { themeStore } from '#lib/theme.svelte.ts';
 	import { getSystem, type SystemInfo } from '../api/system';
@@ -37,12 +38,48 @@
 	let systemError = $state('');
 	let systemLoading = $state(false);
 
+	// Real-time metric history for chart (last 16 points)
+	let cpuHistory = $state<number[]>([
+		12, 18, 15, 24, 20, 28, 22, 35, 25, 30, 28, 32, 26, 38, 30, 25
+	]);
+	let ramHistory = $state<number[]>([
+		40, 42, 41, 43, 42, 44, 45, 43, 44, 46, 45, 47, 46, 48, 47, 48
+	]);
+
+	function pushMetric(val: number, arr: number[]): number[] {
+		const next = [...arr.slice(1), Math.max(2, Math.min(100, Math.round(val)))];
+		return next;
+	}
+
+	function makeSvgPath(points: number[], width = 200, height = 45): { line: string; area: string } {
+		if (!points.length) return { line: '', area: '' };
+		const step = width / (points.length - 1);
+		const coords = points.map((p, i) => {
+			const x = i * step;
+			const y = height - (p / 100) * (height - 6) - 3;
+			return [x, y];
+		});
+
+		const line = coords.reduce(
+			(acc, [x, y], i) => (i === 0 ? `M ${x} ${y}` : `${acc} L ${x} ${y}`),
+			''
+		);
+		const area = `${line} L ${width} ${height} L 0 ${height} Z`;
+		return { line, area };
+	}
+
 	async function loadSystem() {
 		if (systemLoading) return;
 		systemLoading = true;
 		systemError = '';
 		try {
 			systemInfo = await getSystem();
+			if (systemInfo) {
+				const cUsage = systemInfo.cpu_usage ?? 0;
+				const rUsage = systemInfo.mem_usage ?? percent(systemInfo.mem_used, systemInfo.mem_total);
+				cpuHistory = pushMetric(cUsage, cpuHistory);
+				ramHistory = pushMetric(rUsage, ramHistory);
+			}
 		} catch (err) {
 			systemError = err instanceof Error ? err.message : 'Failed to load system information';
 		} finally {
@@ -51,9 +88,18 @@
 	}
 
 	$effect(() => {
-		if (active === 'systemInformation' && !systemInfo && !systemLoading) {
+		if (active === 'systemInformation' && !systemInfo && !systemLoading && !systemError) {
 			void loadSystem();
 		}
+	});
+
+	// Auto-refresh metrics every 3s when dropdown & system tab active
+	$effect(() => {
+		if (active !== 'systemInformation' || !systemInfo) return;
+		const timer = setInterval(() => {
+			void loadSystem();
+		}, 3000);
+		return () => clearInterval(timer);
 	});
 
 	function formatBytes(bytes: number): string {
@@ -82,7 +128,7 @@
 </script>
 
 <div
-	class="flex h-[min(80vh,26rem)] w-full max-w-[min(92vw,45rem)] overflow-hidden rounded-2xl border border-(--border-subtle) bg-(--surface-card) text-(--text-primary) shadow-2xl backdrop-blur-xl"
+	class="flex h-[min(80vh,26rem)] w-full max-w-[min(92vw,45rem)] overflow-hidden rounded-xl border border-(--border-subtle) bg-(--surface-card) text-(--text-primary) shadow-2xl backdrop-blur-xl"
 >
 	<!-- Sidebar -->
 	<aside
@@ -96,7 +142,8 @@
 					onclick={() => (active = item.id)}
 					title={item.label}
 					aria-label={item.label}
-					class="flex h-9 w-9 items-center justify-center rounded-lg transition-colors {active === item.id
+					class="flex h-9 w-9 items-center justify-center rounded-lg transition-colors {active ===
+					item.id
 						? 'bg-(--accent-soft) text-(--accent)'
 						: 'text-(--text-muted) hover:bg-(--surface-hover) hover:text-(--text-primary)'}"
 				>
@@ -110,11 +157,15 @@
 	<section class="flex min-w-0 flex-1 flex-col">
 		<!-- Wallpaper Section -->
 		{#if active === 'wallpaper'}
-			<header class="flex items-center gap-3 border-b border-(--border-subtle) px-4 py-3 sm:px-5 sm:py-4">
+			<header
+				class="flex items-center gap-3 border-b border-(--border-subtle) px-4 py-3 sm:px-5 sm:py-4"
+			>
 				<ImageIcon size={20} />
 				<div>
 					<h2 class="text-sm font-semibold text-(--text-primary)">Wallpaper</h2>
-					<p class="text-xs text-(--text-secondary)">Choose a default background from the static folder</p>
+					<p class="text-xs text-(--text-secondary)">
+						Choose a default background from the static folder
+					</p>
 				</div>
 			</header>
 
@@ -144,7 +195,9 @@
 
 			<!-- Appearance Section -->
 		{:else if active === 'appearance'}
-			<header class="flex items-center gap-3 border-b border-(--border-subtle) px-4 py-3 sm:px-5 sm:py-4">
+			<header
+				class="flex items-center gap-3 border-b border-(--border-subtle) px-4 py-3 sm:px-5 sm:py-4"
+			>
 				<PaletteIcon size={20} />
 				<div>
 					<h2 class="text-sm font-semibold text-(--text-primary)">Appearance</h2>
@@ -199,7 +252,9 @@
 
 			<!-- General Section -->
 		{:else if active === 'general'}
-			<header class="flex items-center gap-3 border-b border-(--border-subtle) px-4 py-3 sm:px-5 sm:py-4">
+			<header
+				class="flex items-center gap-3 border-b border-(--border-subtle) px-4 py-3 sm:px-5 sm:py-4"
+			>
 				<GearIcon size={20} />
 				<div>
 					<h2 class="text-sm font-semibold text-(--text-primary)">General</h2>
@@ -219,7 +274,9 @@
 
 			<!-- System Information Section -->
 		{:else if active === 'systemInformation'}
-			<header class="flex items-center gap-3 border-b border-(--border-subtle) px-4 py-3 sm:px-5 sm:py-4">
+			<header
+				class="flex items-center gap-3 border-b border-(--border-subtle) px-4 py-3 sm:px-5 sm:py-4"
+			>
 				<DesktopIcon size={20} />
 				<div>
 					<h2 class="text-sm font-semibold text-(--text-primary)">System Information</h2>
@@ -227,115 +284,140 @@
 				</div>
 			</header>
 
-			<div class="flex-1 space-y-4 overflow-y-auto p-4 text-sm sm:p-5">
+			<div class="flex-1 space-y-4 overflow-y-auto p-4 sm:p-5">
 				{#if systemLoading && !systemInfo}
-					<p class="text-(--text-secondary)">Loading system information…</p>
+					<div class="flex h-40 flex-col items-center justify-center gap-2 text-(--text-secondary)">
+						<div
+							class="h-5 w-5 animate-spin rounded-full border-2 border-(--border-subtle) border-t-(--accent)"
+						></div>
+						<p class="text-xs">Loading system information…</p>
+					</div>
 				{:else if systemError && !systemInfo}
-					<div class="rounded-lg border border-rose-400/20 bg-rose-500/10 px-4 py-3 text-rose-200/80">
-						<p class="font-medium">Unable to load system information</p>
-						<p class="mt-1 text-xs text-rose-200/60">{systemError}</p>
+					<div class="rounded-xl border border-rose-400/20 bg-rose-500/10 p-4 text-rose-200/90">
+						<div class="flex items-center gap-2 text-sm font-medium text-rose-300">
+							<svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+								/>
+							</svg>
+							<span>Unable to load system info</span>
+						</div>
+						<p class="mt-1.5 text-xs text-rose-200/70">{systemError}</p>
 						<button
 							type="button"
-							class="mt-2 text-xs text-(--text-secondary) underline underline-offset-2 hover:text-(--text-primary)"
+							class="mt-3 inline-flex items-center gap-1.5 rounded-md border border-rose-400/30 bg-rose-500/20 px-3 py-1.5 text-xs font-medium text-rose-100 transition hover:bg-rose-500/30"
 							onclick={() => {
 								systemInfo = null;
+								systemError = '';
 								void loadSystem();
 							}}
 						>
-							Try again
+							Retry connection
 						</button>
 					</div>
 				{:else if systemInfo}
-					<div class="grid gap-3 sm:grid-cols-2">
-						<div class="rounded-lg border border-(--border-subtle) bg-(--surface-inset) px-4 py-3">
-							<p class="text-[11px] tracking-wide text-(--text-secondary) uppercase">OS</p>
-							<p class="mt-1 font-medium text-(--text-primary)" title={systemInfo.os}>{systemInfo.os || '-'}</p>
+					<!-- System Specs Grid -->
+					<div class="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-2.5">
+						<div
+							class="rounded-md border border-(--border-subtle) bg-(--surface-inset) p-3 transition hover:border-(--text-muted)/30"
+						>
+							<span class="text-[10px] font-semibold tracking-wider text-(--text-muted) uppercase"
+								>OS</span
+							>
+							<p
+								class="mt-1 truncate text-xs font-medium text-(--text-primary)"
+								title={systemInfo.os}
+							>
+								{systemInfo.os || '-'}
+							</p>
 						</div>
-						<div class="rounded-lg border border-(--border-subtle) bg-(--surface-inset) px-4 py-3">
-							<p class="text-[11px] tracking-wide text-(--text-secondary) uppercase">Host</p>
-							<p class="mt-1 font-medium text-(--text-primary)">{systemInfo.hostname || '-'}</p>
+						<div
+							class="rounded-md border border-(--border-subtle) bg-(--surface-inset) p-3 transition hover:border-(--text-muted)/30"
+						>
+							<span class="text-[10px] font-semibold tracking-wider text-(--text-muted) uppercase"
+								>Host</span
+							>
+							<p
+								class="mt-1 truncate text-xs font-medium text-(--text-primary)"
+								title={systemInfo.hostname}
+							>
+								{systemInfo.hostname || '-'}
+							</p>
 						</div>
-						<div class="rounded-lg border border-(--border-subtle) bg-(--surface-inset) px-4 py-3">
-							<p class="text-[11px] tracking-wide text-(--text-secondary) uppercase">Kernel</p>
-							<p class="mt-1 font-medium text-(--text-primary)">{systemInfo.kernel || '-'}</p>
+						<div
+							class="rounded-md border border-(--border-subtle) bg-(--surface-inset) p-3 transition hover:border-(--text-muted)/30"
+						>
+							<span class="text-[10px] font-semibold tracking-wider text-(--text-muted) uppercase"
+								>Kernel</span
+							>
+							<p
+								class="mt-1 truncate text-xs font-medium text-(--text-primary)"
+								title={systemInfo.kernel}
+							>
+								{systemInfo.kernel || '-'}
+							</p>
 						</div>
-						<div class="rounded-lg border border-(--border-subtle) bg-(--surface-inset) px-4 py-3">
-							<p class="text-[11px] tracking-wide text-(--text-secondary) uppercase">Architecture</p>
-							<p class="mt-1 font-medium text-(--text-primary)">{systemInfo.arch || '-'}</p>
+						<div
+							class="rounded-md border border-(--border-subtle) bg-(--surface-inset) p-3 transition hover:border-(--text-muted)/30"
+						>
+							<span class="text-[10px] font-semibold tracking-wider text-(--text-muted) uppercase"
+								>Arch</span
+							>
+							<p
+								class="mt-1 truncate text-xs font-medium text-(--text-primary)"
+								title={systemInfo.arch}
+							>
+								{systemInfo.arch || '-'}
+							</p>
 						</div>
 					</div>
 
-					<div class="space-y-3 rounded-lg border border-(--border-subtle) bg-(--surface-inset) p-4">
-						<div class="flex items-start gap-3">
-							<CpuIcon size={18} class="mt-0.5 shrink-0 text-(--text-secondary)" />
-							<div class="min-w-0 flex-1">
-								<div class="flex items-baseline justify-between gap-2">
-									<p class="text-(--text-primary)">CPU</p>
-									<p class="text-xs text-(--text-secondary)">{systemInfo.cpus} core</p>
-								</div>
-								<p class="mt-0.5 truncate text-xs text-(--text-secondary)" title={systemInfo.cpu_model}>
-									{systemInfo.cpu_model || 'Unknown model'}
-								</p>
-							</div>
-						</div>
+					{@const disk = systemInfo.disks?.[0]}
+					<div class="grid grid-cols-3 gap-2.5">
+						<Gauge
+							Icon={CpuIcon}
+							label="CPU"
+							value={systemInfo.cpu_usage ?? 0}
+							sub="{systemInfo.cpus} cores"
+						/>
+						<Gauge
+							Icon={MemoryIcon}
+							label="Memory"
+							color="#818cf8"
+							value={systemInfo.mem_usage ?? percent(systemInfo.mem_used, systemInfo.mem_total)}
+							sub="{formatBytes(systemInfo.mem_used)} / {formatBytes(systemInfo.mem_total)}"
+						/>
+						<Gauge
+							Icon={HardDriveIcon}
+							label="Disk"
+							color="#34d399"
+							value={disk ? percent(disk.used, disk.total) : 0}
+							sub={disk ? `${formatBytes(disk.used)} / ${formatBytes(disk.total)}` : 'N/A'}
+						/>
+					</div>
 
-						<div class="flex items-start gap-3">
-							<MemoryIcon size={18} class="mt-0.5 shrink-0 text-(--text-secondary)" />
-							<div class="min-w-0 flex-1">
-								<div class="flex items-baseline justify-between gap-2">
-									<p class="text-(--text-primary)">Memory</p>
-									<p class="text-xs text-(--text-secondary)">
-										{formatBytes(systemInfo.mem_used)} / {formatBytes(systemInfo.mem_total)}
-										<span class="text-(--text-muted)">({percent(systemInfo.mem_used, systemInfo.mem_total)}%)</span>
-									</p>
-								</div>
-								<div class="mt-2 h-1.5 overflow-hidden rounded-full bg-(--surface-hover)">
-									<div
-										class="h-full rounded-full bg-(--accent)"
-										style="width: {percent(systemInfo.mem_used, systemInfo.mem_total)}%"
-									></div>
-								</div>
-							</div>
+					<div
+						class="flex items-center justify-between rounded-md border border-(--border-subtle) bg-(--surface-inset) px-4 py-3 text-xs"
+					>
+						<div class="flex items-center gap-2 text-(--text-muted)">
+							<ClockIcon size={14} />
+							<span>System Uptime</span>
 						</div>
-
-						{#if systemInfo.disks?.length}
-							{@const disk = systemInfo.disks[0]}
-							<div class="flex items-start gap-3">
-								<HardDriveIcon size={18} class="mt-0.5 shrink-0 text-(--text-secondary)" />
-								<div class="min-w-0 flex-1">
-									<div class="flex items-baseline justify-between gap-2">
-										<p class="text-(--text-primary)">Disk ({disk.path})</p>
-										<p class="text-xs text-(--text-secondary)">
-											{formatBytes(disk.used)} / {formatBytes(disk.total)}
-											<span class="text-(--text-muted)">({percent(disk.used, disk.total)}%)</span>
-										</p>
-									</div>
-									<div class="mt-2 h-1.5 overflow-hidden rounded-full bg-(--surface-hover)">
-										<div
-											class="h-full rounded-full bg-emerald-400/60"
-											style="width: {percent(disk.used, disk.total)}%"
-										></div>
-									</div>
-								</div>
-							</div>
-						{/if}
-
-						<div class="flex items-start gap-3">
-							<ClockIcon size={18} class="mt-0.5 shrink-0 text-(--text-secondary)" />
-							<div class="min-w-0 flex-1">
-								<div class="flex items-baseline justify-between gap-2">
-									<p class="text-(--text-primary)">Uptime</p>
-									<p class="text-xs text-(--text-secondary)">{formatUptime(systemInfo.uptime)}</p>
-								</div>
-							</div>
-						</div>
+						<span class="font-mono text-[11px] font-medium text-(--text-primary)">
+							{formatUptime(systemInfo.uptime)}
+						</span>
 					</div>
 				{/if}
 			</div>
 
 			<!-- About Section -->
 		{:else}
-			<header class="flex items-center gap-3 border-b border-(--border-subtle) px-4 py-3 sm:px-5 sm:py-4">
+			<header
+				class="flex items-center gap-3 border-b border-(--border-subtle) px-4 py-3 sm:px-5 sm:py-4"
+			>
 				<InfoIcon size={20} />
 				<div>
 					<h2 class="text-sm font-semibold text-(--text-primary)">About</h2>
