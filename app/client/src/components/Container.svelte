@@ -40,7 +40,7 @@
 	target={link ? '_blank' : undefined}
 	rel="noreferrer"
 	class="group flex flex-col gap-2 rounded-xl border border-(--border-subtle) bg-(--surface-card) p-2.5 shadow-sm backdrop-blur-xl transition sm:p-3 {link
-		? 'hover:-translate-y-0.5 hover:bg-(--surface-hover)'
+		? 'hover:-translate-y-0.5 hover:bg-(--surface-card-hover) hover:border-(--border-subtle)'
 		: 'cursor-default'}"
 >
 	<div class="flex items-start justify-between gap-2">

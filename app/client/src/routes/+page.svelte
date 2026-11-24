@@ -153,7 +153,7 @@
 					<p class="mb-2 text-[11px] font-medium tracking-wide text-amber-400 uppercase">
 						Needs attention ({issues.length})
 					</p>
-					<ul class="space-y-2">
+					<ul class="max-h-52 space-y-2 overflow-y-auto pr-1">
 						{#each issues as item (item.id)}
 							<li class="min-w-0">
 								<div class="flex items-center gap-2">

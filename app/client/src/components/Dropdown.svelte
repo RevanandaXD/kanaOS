@@ -293,7 +293,7 @@
 						<p class="text-xs">Loading system information…</p>
 					</div>
 				{:else if systemError && !systemInfo}
-					<div class="rounded-xl border border-rose-400/20 bg-rose-500/10 p-4 text-rose-200/90">
+					<div class="rounded-xl border border-red-400/20 bg-red-500 p-4 text-white">
 						<div class="flex items-center gap-2 text-sm font-medium text-rose-300">
 							<svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 								<path
@@ -308,7 +308,7 @@
 						<p class="mt-1.5 text-xs text-rose-200/70">{systemError}</p>
 						<button
 							type="button"
-							class="mt-3 inline-flex items-center gap-1.5 rounded-md border border-rose-400/30 bg-rose-500/20 px-3 py-1.5 text-xs font-medium text-rose-100 transition hover:bg-rose-500/30"
+							class="mt-3 inline-flex items-center gap-1.5 rounded-sm border border-rose-400/30 bg-white px-3 py-1.5 text-xs font-medium text-red-500 transition cursor-pointer"
 							onclick={() => {
 								systemInfo = null;
 								systemError = '';
