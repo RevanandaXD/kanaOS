@@ -1,14 +1,28 @@
+# kanaOS
+
 <div align="center">
-  <img src="./public/Logo.png" alt="kanaOS logo" width="180" />
+  <img src="./public/Logo.png" alt="kanaOS logo" width="200" />
+
   <h1>kanaOS</h1>
-  <p><strong>Simple minimalism dashboard for self-hosted services.</strong></p>
+
+  <p><strong>A simple, minimalist dashboard for self-hosted environments.</strong></p>
 
   <p>
-    <a href="https://github.com/RevanandaXD/kanaOS/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/RevanandaXD/kanaOS/ci.yml?branch=main&label=CI&logo=github&style=for-the-badge" alt="CI" /></a>
-    <a href="https://github.com/RevanandaXD/kanaOS/actions/workflows/docker.yml"><img src="https://img.shields.io/github/actions/workflow/status/RevanandaXD/kanaOS/docker.yml?branch=main&label=Docker&logo=docker&style=for-the-badge" alt="Docker" /></a>
-    <a href="https://github.com/RevanandaXD/kanaOS/stargazers"><img src="https://img.shields.io/github/stars/RevanandaXD/kanaOS?logo=github&style=for-the-badge" alt="Stars" /></a>
-    <a href="https://github.com/RevanandaXD/kanaOS/commits/main"><img src="https://img.shields.io/github/commit-activity/t/RevanandaXD/kanaOS?label=commits&style=for-the-badge" alt="Total commits" /></a>
-    <a href="./LICENSE"><img src="https://img.shields.io/github/license/RevanandaXD/kanaOS?style=for-the-badge" alt="License" /></a>
+    <a href="https://github.com/RevanandaXD/kanaOS/actions/workflows/ci.yml">
+      <img src="https://img.shields.io/github/actions/workflow/status/RevanandaXD/kanaOS/ci.yml?branch=main&label=CI&logo=github&style=for-the-badge" alt="CI" />
+    </a>
+    <a href="https://github.com/RevanandaXD/kanaOS/actions/workflows/docker.yml">
+      <img src="https://img.shields.io/github/actions/workflow/status/RevanandaXD/kanaOS/docker.yml?branch=main&label=Docker&logo=docker&style=for-the-badge" alt="Docker" />
+    </a>
+    <a href="https://github.com/RevanandaXD/kanaOS/stargazers">
+      <img src="https://img.shields.io/github/stars/RevanandaXD/kanaOS?logo=github&style=for-the-badge" alt="Stars" />
+    </a>
+    <a href="https://github.com/RevanandaXD/kanaOS/commits/main">
+      <img src="https://img.shields.io/github/commit-activity/t/RevanandaXD/kanaOS?label=commits&style=for-the-badge" alt="Commit Activity" />
+    </a>
+    <a href="./LICENSE">
+      <img src="https://img.shields.io/github/license/RevanandaXD/kanaOS?style=for-the-badge" alt="License" />
+    </a>
   </p>
 
   <p>
@@ -17,184 +31,202 @@
   </p>
 </div>
 
-## Daftar isi
+## Table of Contents
 
-- [Tentang](#tentang)
-- [Fitur](#fitur)
-- [Statistik repository](#statistik-repository)
-- [Teknologi](#teknologi)
-- [Struktur proyek](#struktur-proyek)
-- [Menjalankan secara lokal](#menjalankan-secara-lokal)
-- [Menjalankan dengan Docker](#menjalankan-dengan-docker)
-- [Konfigurasi](#konfigurasi)
-- [Endpoint API](#endpoint-api)
-- [Berkontribusi](#berkontribusi)
-- [Lisensi](#lisensi)
+- [About](#about)
+- [Features](#features)
+- [Repository Statistics](#repository-statistics)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [Running with Docker](#running-with-docker)
+- [Environment Variables](#environment-variables)
+- [API Endpoints](#api-endpoints)
+- [Contributing](#contributing)
+- [License](#license)
 
-## Tentang
+## About
 
-kanaOS adalah dashboard minimalis untuk memantau server dan container Docker. Antarmukanya dibangun dengan SvelteKit, sedangkan backend-nya adalah API Go ringan yang mengambil data sistem dan Docker, lalu melakukan proxy ke frontend dalam satu proses container.
+kanaOS is a lightweight, minimalist dashboard for monitoring system resources and Docker containers in self-hosted environments.
 
-Cocok untuk home server / self-host yang ingin melihat kondisi mesin tanpa antarmuka yang berat.
+Built with SvelteKit on the frontend and a lightweight Go API on the backend, kanaOS provides real-time system insights through a single, self-contained Docker container.
 
-## Fitur
+Designed for home servers and self-hosting enthusiasts who want a clean, straightforward way to monitor their infrastructure without the overhead of a complex dashboard.
 
-- **Monitoring Docker real-time** — daftar container, status `running` / `stopped` / `other`, health check, dan ringkasan yang diperbarui tiap 5 detik.
-- **Informasi sistem** — OS, hostname, kernel, arsitektur, uptime, penggunaan CPU (gauge), RAM, dan disk dari endpoint `/api/system`.
-- **Widget dashboard** — jam, kalender, dan cuaca (Open-Meteo, koordinat dapat diubah di `Weather.svelte`).
-- **Tema terang & gelap** beserta pilihan wallpaper, dengan pengaturan tersimpan di browser.
-- **Ringan & satu container** — frontend dan API dijalankan bersama oleh `entrypoint.sh`, diekspos lewat satu port.
-- **CI otomatis** — `gofmt`, `go vet`, `go build`, `go test`, `pnpm check`, dan `pnpm build` berjalan di GitHub Actions.
-- **Statistik repository otomatis** — kartu SVG di bawah ini diperbarui setiap ada push dan tiap hari.
+## Features
 
-## Statistik repository
+- **Real-time Docker Monitoring** — View Docker containers, their running states (`running`, `stopped`, or `other`), health checks, and container statistics with automatic updates every 5 seconds.
+- **System Monitoring** — Monitor operating system, hostname, kernel version, architecture, uptime, CPU usage, memory, and disk utilization through the `/api/system` endpoint.
+- **Dashboard Widgets** — Built-in clock, calendar, and weather widgets powered by Open-Meteo, with configurable coordinates.
+- **Light & Dark Themes** — Switch between light and dark modes, customize wallpapers, and keep your preferences saved locally in the browser.
+- **Lightweight Deployment** — Frontend and backend run together in a single container and are exposed through a single port.
+- **Automated CI** — GitHub Actions runs formatting checks, static analysis, tests, and production builds for both frontend and backend.
+- **Automated Repository Statistics** — Automatically generated repository statistics, updated on every push and daily.
+
+## Repository Statistics
 
 <p align="center">
-  <img src="./public/stats.svg" alt="Statistik repository kanaOS: commit, contributor, star, fork, branch, dan tag" width="620" />
+  <img src="./public/stats.svg" alt="kanaOS repository statistics: commits, contributors, stars, forks, branches, and tags" width="620" />
 </p>
 
-Kartu di atas menampilkan jumlah **commit**, **contributor**, **star**, **fork**, **branch**, **tag**, jumlah baris kode, serta tanggal commit pertama dan terakhir. File `public/stats.svg` dihasilkan oleh [`scripts/generate-stats.sh`](./scripts/generate-stats.sh) dan di-commit otomatis oleh [`.github/workflows/stats.yml`](./.github/workflows/stats.yml):
+The statistics card displays the total number of **commits, contributors, stars, forks, branches, tags, lines of code**, as well as the dates of the first and latest commits.
 
-- **Trigger:** push ke `main` dan jadwal harian pukul 03.23 UTC (`workflow_dispatch` juga tersedia).
-- **Sumber data:** `git rev-list/shortlog/branch/tag` untuk metrik lokal, GitHub REST API via `gh` untuk star, fork, watcher, dan open issue.
-- **Anti-loop:** commit workflow memakai `[skip ci]`, actor bot diabaikan, dan perubahan pada `public/stats.svg` tidak memicu workflow lagi.
+The `public/stats.svg` file is generated by [`scripts/generate-stats.sh`](./scripts/generate-stats.sh) and automatically committed through [`.github/workflows/stats.yml`](./.github/workflows/stats.yml).
 
-Badge di bagian atas README juga "live" karena langsung dibaca dari GitHub API (shield.io), bukan angka statis.
+- **Triggers:** Pushes to `main` and a daily schedule at 03:23 UTC. Manual execution is also available through `workflow_dispatch`.
+- **Data sources:** Git history (`git rev-list`, `git shortlog`, branches, and tags) for repository metrics, and the GitHub REST API via `gh` for stars, forks, watchers, and open issues.
+- **Loop prevention:** Workflow-generated commits use `[skip ci]`, bot actors are ignored, and changes to `public/stats.svg` do not trigger another statistics update.
 
-Untuk membuat ulang kartu secara manual:
+The badges at the top of this README are also dynamic. They retrieve repository information directly from GitHub through Shields.io rather than displaying hardcoded values.
+
+To regenerate the statistics card manually:
 
 ```bash
 bash scripts/generate-stats.sh
-# atau tentukan lokasi output
+
+# Specify a custom output path
 bash scripts/generate-stats.sh public/stats.svg
 
-# opsional: timpa angka GitHub tanpa gh/token
+# Optionally override GitHub metrics without gh or a token
 STARS=12 FORKS=3 WATCHERS=1 OPEN_ISSUES=0 bash scripts/generate-stats.sh
 ```
 
-> Metrik commit dihitung dari seluruh riwayat git (`git rev-list --count HEAD`), jadi checkout harus menggunakan `fetch-depth: 0` seperti di workflow.
+> Commit statistics are calculated from the entire Git history using `git rev-list --count HEAD`. Make sure to use `fetch-depth: 0` when checking out the repository in GitHub Actions.
 
-## Teknologi
+## Tech Stack
 
-| Bagian | Stack |
+| Component | Technology |
 | --- | --- |
-| Frontend | SvelteKit 3, Svelte 5 (runes), TypeScript, Tailwind CSS 4, Vite 8, Phosphor Icons |
-| Backend | Go 1.27, `net/http`, Docker client (`github.com/moby/moby/client`), YAML |
-| Build | pnpm 12, Node 26, Docker multi-stage, GHCR |
-| Otomatisasi | GitHub Actions (CI, Docker, statistik repository) |
+| Frontend | SvelteKit 3, Svelte 5 (Runes), TypeScript, Tailwind CSS 4, Vite 8, Phosphor Icons |
+| Backend | Go 1.27, `net/http`, Docker Client (`github.com/moby/moby/client`) |
+| Build & Deployment | pnpm 12, Node.js 26, Docker Multi-stage Build, GitHub Container Registry |
+| Automation | GitHub Actions (CI, Docker, Repository Statistics) |
 
-## Struktur proyek
+## Project Structure
 
 ```text
 kanaOS/
 ├── app/
 │   ├── client/              # SvelteKit frontend
 │   │   └── src/
-│   │       ├── api/         # helper fetch (/api/containers, /api/system)
-│   │       ├── components/  # Clock, Calendar, Weather, Container, Gauge, Navbar, Dropdown
-│   │       └── routes/      # halaman dashboard + layout & tema
-│   └── server/              # API Go
+│   │       ├── api/         # API fetch helpers
+│   │       ├── components/  # Dashboard widgets and UI components
+│   │       └── routes/      # Dashboard pages, layouts, and themes
+│   └── server/              # Go API backend
 │       └── internal/
-│           ├── api/         # router & handler
-│           ├── config/      # loader service.yml
-│           ├── docker/      # client, cache, mapping, tipe data
-│           └── system/      # pengumpul info sistem per platform
-├── config/                  # service.yml (opsional)
-├── public/                  # Logo.png, screenshot tema, stats.svg (generated)
-├── scripts/                 # generate-stats.sh
-└── .github/workflows/       # ci.yml, docker.yml, stats.yml
+│           ├── api/         # HTTP router and handlers
+│           ├── config/      # Configuration loader
+│           ├── docker/      # Docker client, caching, and data mapping
+│           └── system/      # Platform-specific system information
+├── public/                  # Logo, screenshots, and generated statistics
+├── scripts/                 # Repository statistics generator
+└── .github/
+    └── workflows/           # CI, Docker, and statistics workflows
 ```
 
-## Menjalankan secara lokal
+## Getting Started
 
-### Prasyarat
+### Prerequisites
 
-- Node.js 26 dan pnpm 12
+- Node.js 26
+- pnpm 12
 - Go 1.27
-- DockerEngine / Docker socket yang bisa diakses
-- Git Bash atau shell POSIX untuk menjalankan script statistik
+- Docker Engine with an accessible Docker socket
+- Git Bash or a POSIX-compatible shell for running the statistics script
+
+### Clone the Repository
 
 ```bash
 git clone https://github.com/RevanandaXD/kanaOS.git
 cd kanaOS
 ```
 
-Jalankan frontend dan backend di dua terminal terpisah:
+### Run the Frontend
+
+Open the first terminal:
 
 ```bash
-# Terminal 1 — frontend (http://localhost:3000/app  atau port yang ditampilkan Vite)
 cd app/client
 pnpm install
 pnpm dev
 ```
 
+The frontend will be available at `http://localhost:3000` (or the port reported by Vite).
+
+### Run the Backend
+
+Open a second terminal:
+
 ```bash
-# Terminal 2 — API (http://localhost:8080)
 cd app/server
 go run ./cmd/kanaos
 ```
 
-Frontend memanggil endpoint relatif (`/api/...`) dan API melakukan reverse proxy ke `http://127.0.0.1:3000`, jadi port default sudah saling cocok.
+The API will be available at `http://localhost:8080`.
 
-Pemeriksaan sebelum commit:
+During local development, the frontend uses relative `/api/...` requests, while the Go backend proxies frontend requests to `http://127.0.0.1:3000`.
+
+### Run Checks Before Committing
+
+Frontend:
 
 ```bash
-cd app/client && pnpm check && pnpm lint && pnpm build
-cd ../server && gofmt -l . && go vet ./... && go test ./... && go build ./...
+cd app/client
+pnpm check
+pnpm lint
+pnpm build
 ```
 
-## Menjalankan dengan Docker
+Backend:
 
-Cara tercepat memakai image yang sudah dibangun di GHCR:
+```bash
+cd app/server
+gofmt -l .
+go vet ./...
+go test ./...
+go build ./...
+```
+
+## Running with Docker
+
+The easiest way to run kanaOS is through Docker Compose using the prebuilt image from GitHub Container Registry:
 
 ```bash
 docker compose up -d
 ```
 
-Atau build sendiri dari sumber:
+Alternatively, build the image locally:
 
 ```bash
 docker compose up -d --build
 ```
 
-Lalu buka <http://localhost:3000>. Compose sudah melakukan mount `/var/run/docker.sock` (read-only) agar API bisa membaca container, dan mount `./config` sebagai konfigurasi.
+Once the container is running, open:
 
-## Konfigurasi
+`http://localhost:3000`
 
-Semua env bersifat opsional:
+Docker Compose mounts the Docker socket in read-only mode to allow the backend to retrieve container information.
 
-| Variabel | Default | Keterangan |
+## Environment Variables
+
+The following environment variables are optional:
+
+| Variable | Default | Description |
 | --- | --- | --- |
-| `PORT` | `8080` | Port API / container saat produksi |
-| `WEB_UPSTREAM` | `http://127.0.0.1:3000` | Tujuan reverse proxy untuk SvelteKit |
-| `CONFIG_PATH` | `../config/service.yml` | Lokasi file konfigurasi service (YAML) |
-| `DOCKER_CACHE_TTL` | `3s` | Durasi cache hasil `docker ps` |
+| `PORT` | `8080` | API and container listening port |
+| `WEB_UPSTREAM` | `http://127.0.0.1:3000` | Upstream URL for the SvelteKit frontend |
+| `DOCKER_CACHE_TTL` | `3s` | Cache duration for Docker container listings |
 
-Contoh `config/service.yml`:
+## API Endpoints
 
-```yaml
-categories:
-  - name: Media
-    services:
-      - name: Jellyfin
-        description: Media server
-        url: http://jellyfin.local
-        icon: jellyfin
-```
-
-File tidak harus ada; API akan tetap berjalan dengan daftar kategori kosong.
-
-## Endpoint API
-
-| Method | Endpoint | Deskripsi |
+| Method | Endpoint | Description |
 | --- | --- | --- |
-| `GET` | `/api/health` | Health check (`{"status":"ok","name":"KanaOS API"}`) |
-| `GET` | `/api/containers` | Daftar container Docker beserta status & health (cache TTL) |
-| `GET` | `/api/system` | Info OS, hostname, kernel, arsitektur, uptime, CPU, RAM, disk |
-| `GET` | `/api/services` | Isi konfigurasi service dari `service.yml` |
-| `GET` | `/*` | Reverse proxy ke frontend SvelteKit |
+| `GET` | `/api/health` | API health check |
+| `GET` | `/api/containers` | Retrieve Docker containers, including their status and health information |
+| `GET` | `/api/system` | Retrieve system information, including OS, hostname, kernel, architecture, uptime, CPU, memory, and disk usage |
+| `GET` | `/*` | Reverse proxy to the SvelteKit frontend |
 
-Contoh:
+Example requests:
 
 ```bash
 curl http://localhost:8080/api/health
@@ -202,15 +234,19 @@ curl http://localhost:8080/api/containers
 curl http://localhost:8080/api/system
 ```
 
-## Berkontribusi
+## Contributing
 
-1. Fork repository lalu buat branch dari `main`, misalnya `feat/nama-fitur`.
-2. Ikuti gaya commit yang sudah dipakai: `feat(...)`, `fix(...)`, `refactor(...)`, `chore(...)`.
-3. Pastikan CI hijau (`pnpm check`, `pnpm build`, `gofmt`, `go vet`, `go test`).
-4. Buat pull request dengan deskripsi perubahan yang jelas.
+Contributions are welcome!
 
-Statistik repository tidak perlu diedit manual — workflow akan memperbaruinya sendiri.
+1. Fork the repository and create a new branch from `main`, such as `feat/feature-name`.
+2. Follow the existing commit message conventions: `feat(...)`, `fix(...)`, `refactor(...)`, and `chore(...)`.
+3. Ensure all checks pass, including `pnpm check`, `pnpm build`, `gofmt`, `go vet`, and `go test`.
+4. Submit a pull request with a clear description of your changes.
 
-## Lisensi
+Repository statistics are generated automatically, so there is no need to edit `public/stats.svg` manually.
 
-Proyek ini dirilis di bawah [GNU General Public License v3.0](./LICENSE) © Revananda.
+## License
+
+This project is licensed under the [GNU General Public License v3.0](./LICENSE).
+
+Copyright © Revananda.
