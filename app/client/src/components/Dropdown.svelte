@@ -10,9 +10,12 @@
 	import MemoryIcon from 'phosphor-svelte/lib/Memory';
 	import HardDriveIcon from 'phosphor-svelte/lib/HardDrive';
 	import ClockIcon from 'phosphor-svelte/lib/Clock';
+	import EyeIcon from 'phosphor-svelte/lib/Eye';
+	import EyeSlashIcon from 'phosphor-svelte/lib/EyeSlash';
 	import Gauge from './Gauge.svelte';
 	import { wallpaperStore, wallpapers } from '#lib/wallpaper.svelte.ts';
 	import { themeStore } from '#lib/theme.svelte.ts';
+	import { privacyStore } from '#lib/hidePort.svelte.ts';
 	import { getSystem, type SystemInfo } from '../api/system';
 	import { version, author } from '../../package.json' with { type: 'json' };
 
@@ -262,6 +265,42 @@
 				</div>
 			</header>
 			<div class="flex-1 space-y-3 overflow-y-auto p-4 text-sm sm:p-5">
+				<div
+					class="flex items-center justify-between rounded-lg border border-(--border-subtle) bg-(--surface-inset) px-4 py-3"
+				>
+					<div>
+						<p class="text-(--text-primary)">Hide Port</p>
+						<p class="mt-0.5 text-xs text-(--text-secondary)">
+							{privacyStore.current === 'hide'
+								? 'Port numbers are hidden on container cards'
+								: 'Port numbers are visible on container cards'}
+						</p>
+					</div>
+					<button
+						type="button"
+						role="switch"
+						aria-checked={privacyStore.current === 'hide'}
+						aria-label="Hide container ports"
+						onclick={() => privacyStore.toggle()}
+						class="relative inline-flex h-7 w-13 shrink-0 items-center rounded-full border border-(--border-subtle) transition-colors {privacyStore.current ===
+						'hide'
+							? 'bg-(--accent)'
+							: 'bg-(--surface-hover)'}"
+					>
+						<span
+							class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white text-slate-700 shadow transition-transform {privacyStore.current ===
+							'hide'
+								? 'translate-x-7'
+								: 'translate-x-1'}"
+						>
+							{#if privacyStore.current === 'hide'}
+								<EyeSlashIcon size={12} weight="fill" />
+							{:else}
+								<EyeIcon size={12} weight="fill" />
+							{/if}
+						</span>
+					</button>
+				</div>
 				<div class="rounded-lg border border-(--border-subtle) bg-(--surface-inset) px-4 py-3">
 					<p class="text-(--text-primary)">Language</p>
 					<p class="mt-0.5 text-xs text-(--text-secondary)">English</p>
@@ -308,7 +347,7 @@
 						<p class="mt-1.5 text-xs text-rose-200/70">{systemError}</p>
 						<button
 							type="button"
-							class="mt-3 inline-flex items-center gap-1.5 rounded-sm border border-rose-400/30 bg-white px-3 py-1.5 text-xs font-medium text-red-500 transition cursor-pointer"
+							class="mt-3 inline-flex cursor-pointer items-center gap-1.5 rounded-sm border border-rose-400/30 bg-white px-3 py-1.5 text-xs font-medium text-red-500 transition"
 							onclick={() => {
 								systemInfo = null;
 								systemError = '';

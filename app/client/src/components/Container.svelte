@@ -1,6 +1,7 @@
 <script lang="ts">
 	import CubeIcon from 'phosphor-svelte/lib/Cube';
 	import { dockerIcon } from '../lib/docker-icon';
+	import { privacyStore } from '../lib/hidePort.svelte.ts';
 	import type { Container, Port } from '../api/containers';
 
 	let { container }: { container: Container } = $props();
@@ -40,7 +41,7 @@
 	target={link ? '_blank' : undefined}
 	rel="noreferrer"
 	class="group flex flex-col gap-2 rounded-xl border border-(--border-subtle) bg-(--surface-card) p-2.5 shadow-sm backdrop-blur-xl transition sm:p-3 {link
-		? 'hover:-translate-y-0.5 hover:bg-(--surface-card-hover) hover:border-(--border-subtle)'
+		? 'hover:-translate-y-0.5 hover:border-(--border-subtle) hover:bg-(--surface-card-hover)'
 		: 'cursor-default'}"
 >
 	<div class="flex items-start justify-between gap-2">
@@ -84,7 +85,7 @@
 					<span
 						class="rounded bg-(--surface-inset) px-1.5 py-px font-mono text-[10px] text-(--text-secondary)"
 					>
-						{portLabel(port)}
+						{privacyStore.current === 'show' ? portLabel(port) : '•••'}
 					</span>
 				{/each}
 			</div>
@@ -94,6 +95,6 @@
 	<p
 		class="truncate border-t border-(--border-subtle) pt-1.5 text-[10px] text-(--text-muted) group-hover:text-(--text-secondary) sm:text-[11px]"
 	>
-		{link ?? container.status}
+		{privacyStore.current === 'show' ? (link ?? container.status) : container.status}
 	</p>
 </a>
