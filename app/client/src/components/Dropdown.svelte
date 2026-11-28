@@ -12,10 +12,13 @@
 	import ClockIcon from 'phosphor-svelte/lib/Clock';
 	import EyeIcon from 'phosphor-svelte/lib/Eye';
 	import EyeSlashIcon from 'phosphor-svelte/lib/EyeSlash';
+	import MapPinIcon from 'phosphor-svelte/lib/MapPin';
+	import MagnifyingGlassIcon from 'phosphor-svelte/lib/MagnifyingGlass';
 	import Gauge from './Gauge.svelte';
 	import { wallpaperStore, wallpapers } from '#lib/wallpaper.svelte.ts';
 	import { themeStore } from '#lib/theme.svelte.ts';
 	import { privacyStore } from '#lib/hidePort.svelte.ts';
+	import { weatherLocationStore, type WeatherLocation } from '#lib/weatherLocation.svelte.ts';
 	import { getSystem, type SystemInfo } from '../api/system';
 	import { version, author } from '../../package.json' with { type: 'json' };
 
@@ -40,6 +43,55 @@
 	let systemInfo = $state<SystemInfo | null>(null);
 	let systemError = $state('');
 	let systemLoading = $state(false);
+
+	type GeocodingResult = WeatherLocation & {
+		id: number;
+		admin1?: string;
+	};
+
+	let locationQuery = $state('');
+	let locationResults = $state<GeocodingResult[]>([]);
+	let locationSearching = $state(false);
+	let locationError = $state('');
+
+	async function searchLocation(event?: SubmitEvent) {
+		event?.preventDefault();
+		const q = locationQuery.trim();
+		if (q.length < 2) {
+			locationResults = [];
+			locationError = '';
+			return;
+		}
+		locationSearching = true;
+		locationError = '';
+		try {
+			const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=5&language=en&format=json`;
+			const res = await fetch(url);
+			if (!res.ok) throw new Error(String(res.status));
+			const data = (await res.json()) as { results?: GeocodingResult[] };
+			locationResults = data.results ?? [];
+			if (locationResults.length === 0) {
+				locationError = 'No matching cities found';
+			}
+		} catch {
+			locationError = 'Failed to search location';
+			locationResults = [];
+		} finally {
+			locationSearching = false;
+		}
+	}
+
+	function selectLocation(loc: GeocodingResult) {
+		weatherLocationStore.setLocation({
+			name: loc.name,
+			country: loc.country,
+			latitude: loc.latitude,
+			longitude: loc.longitude
+		});
+		locationQuery = '';
+		locationResults = [];
+		locationError = '';
+	}
 
 	// Real-time metric history for chart (last 16 points)
 	let cpuHistory = $state<number[]>([
@@ -131,13 +183,12 @@
 </script>
 
 <div
-	class="flex h-[min(80vh,26rem)] w-full max-w-[min(92vw,45rem)] overflow-hidden rounded-xl border border-(--border-subtle) bg-(--surface-card) text-(--text-primary) shadow-2xl backdrop-blur-xl"
+	class="flex max-h-[min(78dvh,32rem)] w-full flex-col overflow-hidden rounded-xl border border-(--border-subtle) bg-(--surface-card) text-(--text-primary) shadow-2xl backdrop-blur-xl sm:h-[min(80vh,26rem)] sm:flex-row"
 >
-	<!-- Sidebar -->
 	<aside
-		class="flex w-13 shrink-0 flex-col items-center border-r border-(--border-subtle) bg-(--surface-inset) py-3 sm:w-14"
+		class="flex shrink-0 items-center border-b border-(--border-subtle) bg-(--surface-inset) px-2 py-1.5 sm:w-14 sm:flex-col sm:border-r sm:border-b-0 sm:px-0 sm:py-3"
 	>
-		<nav class="flex flex-1 flex-col items-center gap-2">
+		<nav class="flex flex-1 flex-row items-center justify-center gap-2 sm:flex-col sm:justify-start">
 			{#each menuItems as item (item.id)}
 				{@const Icon = item.icon}
 				<button
@@ -157,8 +208,7 @@
 	</aside>
 
 	<!-- Content -->
-	<section class="flex min-w-0 flex-1 flex-col">
-		<!-- Wallpaper Section -->
+	<section class="flex min-h-0 min-w-0 flex-1 flex-col">
 		{#if active === 'wallpaper'}
 			<header
 				class="flex items-center gap-3 border-b border-(--border-subtle) px-4 py-3 sm:px-5 sm:py-4"
@@ -302,6 +352,60 @@
 					</button>
 				</div>
 				<div class="rounded-lg border border-(--border-subtle) bg-(--surface-inset) px-4 py-3">
+					<div class="flex items-center justify-between gap-2">
+						<div class="min-w-0">
+							<p class="text-(--text-primary)">Weather Location</p>
+							<p class="mt-0.5 flex items-center gap-1 truncate text-xs text-(--text-secondary)">
+								<MapPinIcon size={12} class="shrink-0" />
+								<span class="truncate">
+									{weatherLocationStore.current.name}{weatherLocationStore.current.country
+										? `, ${weatherLocationStore.current.country}`
+										: ''}
+								</span>
+							</p>
+						</div>
+					</div>
+					<form onsubmit={searchLocation} class="mt-3 flex gap-2">
+						<input
+							type="search"
+							bind:value={locationQuery}
+							placeholder="Search city (e.g. Tokyo, Bandung)…"
+							aria-label="Search weather city"
+							class="min-w-0 flex-1 rounded-md border border-(--border-subtle) bg-(--surface-card) px-3 py-1.5 text-xs text-(--text-primary) placeholder:text-(--text-muted) focus:border-(--accent) focus:outline-none"
+						/>
+						<button
+							type="submit"
+							disabled={locationSearching}
+							class="inline-flex shrink-0 items-center gap-1.5 rounded-md bg-(--accent-soft) px-3 py-1.5 text-xs font-medium text-(--accent) transition hover:opacity-90 disabled:opacity-50"
+						>
+							<MagnifyingGlassIcon size={14} />
+							<span>{locationSearching ? 'Searching…' : 'Search'}</span>
+						</button>
+					</form>
+					{#if locationError}
+						<p class="mt-2 text-xs text-(--text-muted)">{locationError}</p>
+					{:else if locationResults.length > 0}
+						<ul class="mt-2 divide-y divide-(--border-subtle) rounded-md border border-(--border-subtle) bg-(--surface-card)">
+							{#each locationResults as loc (loc.id)}
+								<li>
+									<button
+										type="button"
+										onclick={() => selectLocation(loc)}
+										class="flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-xs transition hover:bg-(--surface-hover)"
+									>
+										<span class="truncate font-medium text-(--text-primary)">
+											{loc.name}{loc.admin1 ? `, ${loc.admin1}` : ''}
+										</span>
+										{#if loc.country}
+											<span class="shrink-0 text-[11px] text-(--text-muted)">{loc.country}</span>
+										{/if}
+									</button>
+								</li>
+							{/each}
+						</ul>
+					{/if}
+				</div>
+				<div class="rounded-lg border border-(--border-subtle) bg-(--surface-inset) px-4 py-3">
 					<p class="text-(--text-primary)">Language</p>
 					<p class="mt-0.5 text-xs text-(--text-secondary)">English</p>
 				</div>
@@ -415,7 +519,7 @@
 					</div>
 
 					{@const disk = systemInfo.disks?.[0]}
-					<div class="grid grid-cols-3 gap-2.5">
+					<div class="grid grid-cols-3 gap-2 sm:gap-2.5">
 						<Gauge
 							Icon={CpuIcon}
 							label="CPU"
