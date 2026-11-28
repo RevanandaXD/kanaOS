@@ -145,9 +145,9 @@
 			</div>
 
 			{#if loading}
-				<p class="mt-4 text-sm text-(--text-muted)">Checking status…</p>
+				<p class="mt-4 text-xs text-(--text-muted)">Checking status…</p>
 			{:else if issues.length === 0}
-				<p class="mt-4 text-sm text-emerald-400/90">All containers are running normally.</p>
+				<p class="mt-4 text-xs text-emerald-400/90">All containers are running normally.</p>
 			{:else}
 				<div class="mt-4 border-t border-(--border-subtle) pt-3">
 					<p class="mb-2 text-[11px] font-medium tracking-wide text-amber-400 uppercase">

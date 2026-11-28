@@ -21,9 +21,9 @@
 </script>
 
 <div
-	class="flex flex-col items-center gap-2 rounded-md border border-(--border-subtle) bg-(--surface-inset) p-3 transition hover:border-(--text-muted)/30"
+	class="flex flex-col items-center gap-1.5 rounded-md border border-(--border-subtle) bg-(--surface-inset) p-2 transition hover:border-(--text-muted)/30 sm:gap-2 sm:p-3"
 >
-	<div class="relative h-24 w-24">
+	<div class="relative h-16 w-16 sm:h-24 sm:w-24">
 		<svg viewBox="0 0 80 80" class="h-full w-full -rotate-90">
 			<circle cx="40" cy="40" {r} fill="none" stroke="var(--surface-hover)" stroke-width="6" />
 			<circle
@@ -41,13 +41,13 @@
 		</svg>
 		<div class="absolute inset-0 flex flex-col items-center justify-center gap-0.5">
 			<span style="color:{color}"><Icon size={14} weight="bold" /></span>
-			<span class="font-mono text-base font-semibold text-(--text-primary) tabular-nums">
+			<span class="font-mono text-xs font-semibold text-(--text-primary) tabular-nums sm:text-base">
 				{Math.round(value)}%
 			</span>
 		</div>
 	</div>
-	<div class="text-center">
-		<p class="text-xs font-medium text-(--text-primary)">{label}</p>
-		<p class="mt-0.5 text-[10px] text-(--text-muted)">{sub}</p>
+	<div class="min-w-0 max-w-full text-center">
+		<p class="text-[11px] font-medium text-(--text-primary) sm:text-xs">{label}</p>
+		<p class="mt-0.5 truncate text-[9px] text-(--text-muted) sm:text-[10px]">{sub}</p>
 	</div>
 </div>
