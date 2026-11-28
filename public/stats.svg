@@ -29,7 +29,7 @@
   <g font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif">
     <g transform="translate(24,110)">
       <rect width="184" height="86" rx="12" fill="#121B2E" stroke="#233252"/>
-      <text x="16" y="45" fill="url(#accent)" font-size="32" font-weight="700">39</text>
+      <text x="16" y="45" fill="url(#accent)" font-size="32" font-weight="700">40</text>
       <text x="16" y="68" fill="#8B9AB5" font-size="11" font-weight="600" letter-spacing="1.2">COMMITS</text>
     </g>
     <g transform="translate(218,110)">
@@ -39,7 +39,7 @@
     </g>
     <g transform="translate(412,110)">
       <rect width="184" height="86" rx="12" fill="#121B2E" stroke="#233252"/>
-      <text x="16" y="45" fill="url(#accent)" font-size="32" font-weight="700">1</text>
+      <text x="16" y="45" fill="url(#accent)" font-size="32" font-weight="700">2</text>
       <text x="16" y="68" fill="#8B9AB5" font-size="11" font-weight="600" letter-spacing="1.2">STARS</text>
     </g>
 
@@ -62,5 +62,5 @@
 
   <line x1="24" y1="308" x2="596" y2="308" stroke="#22304D"/>
   <text x="24" y="329" fill="#74849F" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="11">2409 lines of code · 0 watchers · 0 open issues</text>
-  <text x="24" y="347" fill="#74849F" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="11">First commit 17 Nov 2026 · Last commit 26 Nov 2026</text>
+  <text x="24" y="347" fill="#74849F" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="11">First commit 17 Nov 2026 · Last commit 27 Nov 2026</text>
 </svg>
