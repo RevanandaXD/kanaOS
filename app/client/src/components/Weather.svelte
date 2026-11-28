@@ -1,9 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-
-	const LAT = -6.2;
-	const LON = 106.8;
-	const PLACE = 'My location';
+	import { weatherLocationStore } from '#lib/weatherLocation.svelte.ts';
 
 	type Current = {
 		temperature_2m: number;
@@ -36,30 +32,40 @@
 		99: 'Thunderstorm'
 	};
 
-	onMount(() => {
+	$effect(() => {
+		const { latitude, longitude } = weatherLocationStore.current;
+		const controller = new AbortController();
+
 		const load = async () => {
 			try {
 				const url =
-					`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}` +
+					`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}` +
 					`&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&timezone=auto`;
-				const res = await fetch(url);
+				const res = await fetch(url, { signal: controller.signal });
 				if (!res.ok) throw new Error(String(res.status));
 				current = (await res.json()).current;
 				error = '';
-			} catch {
+			} catch (err) {
+				if (err instanceof DOMException && err.name === 'AbortError') return;
 				error = 'Weather unavailable';
 			}
 		};
+
 		load();
 		const id = setInterval(load, 15 * 60 * 1000);
-		return () => clearInterval(id);
+		return () => {
+			controller.abort();
+			clearInterval(id);
+		};
 	});
 </script>
 
 <div
 	class="rounded-xl border border-(--border-subtle) bg-(--surface-card) p-4 shadow-sm backdrop-blur-xl sm:p-5"
 >
-	<p class="text-xs font-medium tracking-wide text-(--text-muted) uppercase">{PLACE}</p>
+	<p class="truncate text-xs font-medium tracking-wide text-(--text-muted) uppercase">
+		{weatherLocationStore.current.name}
+	</p>
 
 	{#if error}
 		<p class="mt-3 text-sm text-(--text-muted)">{error}</p>
