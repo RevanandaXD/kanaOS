@@ -1,7 +1,7 @@
 # kanaOS
 
 <div align="center">
-  <img src="./public/Logo.png" alt="kanaOS logo" width="200" />
+  <img src="./public/Logo.png" alt="kanaOS logo" width="300" />
 
   <h1>kanaOS</h1>
 
